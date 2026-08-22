@@ -2793,18 +2793,17 @@ function loadState() {
 }
 
 async function clearState(e) {
-  const ok = await popConfirm('Réinitialiser le projet ?\nToutes les tâches seront supprimées.', e, 'Réinitialiser');
+  const ok = await popConfirm('Réinitialiser le projet ?\nLes données seront remplacées par le modèle de démarrage.', e, 'Réinitialiser');
   if (!ok) return;
   localStorage.removeItem(LS_KEY);
   S.tasks = [];
   S.selId = null;
   S.cpIds = new Set();
   S.cpData = {};
-  // Vider le DOM immédiatement pour éviter les artefacts
   document.getElementById('tList').innerHTML = '';
   document.getElementById('grows').innerHTML = '';
   document.getElementById('depSvg').innerHTML = '';
-  document.getElementById('projName').value = 'Nouveau projet';
+  initSample();
   render();
 }
 
@@ -2816,43 +2815,49 @@ document.getElementById('projName').addEventListener('input', saveState);
 // =====================================================
 function initSample(){
   const t=new Date(); t.setHours(0,0,0,0);
-  const T=n=>fmt(new Date(t.getTime()+n*DAY));
-  document.getElementById('projName').value='Refonte Site Web';
+  // Trouver le prochain lundi pour un démarrage propre
+  const dow=t.getDay()||7;
+  const monday=new Date(t.getTime()-(dow-1)*DAY);
+  const T=n=>fmt(new Date(monday.getTime()+n*DAY));
+
+  document.getElementById('projName').value='Nouveau projet';
+
+  // ids stables pour les dépendances
+  const g1id='grp-1', t1id='tsk-1', t2id='tsk-2';
+  const g2id='grp-2', t3id='tsk-3';
+
   S.tasks=[
-    // ── Groupe 0 : Cadrage ─────────────────────────────────────────
-    {id:'g1',isGroup:true,level:0,name:'CADRAGE',startDate:T(-40),endDate:T(-30),color:'#5B9CF6',deps:[],progress:0,assignee:'',priority:'high',notes:''},
-    {id:'t1',level:1,parentId:'g1',name:'Recueil des besoins',startDate:T(-40),endDate:T(-36),progress:100,deps:[],assignee:'Alice Martin',priority:'high',color:'#5B9CF6',notes:'Ateliers avec les parties prenantes'},
-    {id:'t2',level:1,parentId:'g1',name:'Analyse de l\'existant',startDate:T(-35),endDate:T(-32),progress:100,deps:['t1'],assignee:'Bob Dupont',priority:'medium',color:'#5B9CF6',notes:'Audit technique'},
-    {id:'t3',level:1,parentId:'g1',name:'Cahier des charges',startDate:T(-31),endDate:T(-30),progress:100,deps:['t2'],assignee:'Alice Martin',priority:'high',color:'#5B9CF6',notes:''},
+    // ── Groupe 1 ───────────────────────────────────────────────────
+    {id:g1id, isGroup:true, level:0, parentId:null,
+     name:'Groupe 1',
+     startDate:T(0), endDate:T(14),
+     color:'#5B9CF6', deps:[], progress:0,
+     assignee:'', priority:'medium', notes:'', montant:0},
 
-    // ── Groupe 1 : Design ──────────────────────────────────────────
-    {id:'g2',isGroup:true,level:0,name:'DESIGN',startDate:T(-29),endDate:T(-14),color:'#B99EFF',deps:[],progress:0,assignee:'',priority:'high',notes:''},
-    {id:'t4',level:1,parentId:'g2',name:'Maquettes UI/UX',startDate:T(-29),endDate:T(-21),progress:100,deps:['t3'],assignee:'Clara Petit',priority:'high',color:'#B99EFF',notes:'Figma + prototypes'},
-    {id:'t5',level:1,parentId:'g2',name:'Validation maquettes',startDate:T(-20),endDate:T(-18),progress:100,deps:['t4'],assignee:'Alice Martin',priority:'medium',color:'#B99EFF',notes:''},
-    {id:'t6',level:1,parentId:'g2',name:'Design system',startDate:T(-17),endDate:T(-14),progress:100,deps:['t5'],assignee:'Clara Petit',priority:'high',color:'#B99EFF',notes:'Tokens, composants'},
+    {id:t1id, isGroup:false, level:1, parentId:g1id,
+     name:'Tâche 1',
+     startDate:T(0), endDate:T(4),      // 5 jours ouvrés
+     color:'#5B9CF6', deps:[], progress:0,
+     assignee:'', priority:'medium', notes:'', montant:0},
 
-    // ── Groupe 2 : Développement ───────────────────────────────────
-    {id:'g3',isGroup:true,level:0,name:'DÉVELOPPEMENT',startDate:T(-20),endDate:T(2),color:'#38BDF8',deps:[],progress:0,assignee:'',priority:'high',notes:''},
-    {id:'g31',isGroup:true,level:1,parentId:'g3',name:'Frontend',startDate:T(-13),endDate:T(2),color:'#38BDF8',deps:[],progress:0,assignee:'',priority:'high',notes:''},
-    {id:'t7',level:2,parentId:'g31',name:'Intégration design system',startDate:T(-13),endDate:T(-9),progress:80,deps:['t6'],assignee:'Clara Petit',priority:'high',color:'#38BDF8',notes:'React + TypeScript'},
-    {id:'t8',level:2,parentId:'g31',name:'Développement pages',startDate:T(-8),endDate:T(0),progress:50,deps:['t7'],assignee:'Clara Petit',priority:'high',color:'#38BDF8',notes:''},
-    {id:'t9',level:2,parentId:'g31',name:'Responsive & accessibilité',startDate:T(1),endDate:T(2),progress:0,deps:['t8'],assignee:'Clara Petit',priority:'medium',color:'#38BDF8',notes:''},
-    {id:'g32',isGroup:true,level:1,parentId:'g3',name:'Backend',startDate:T(-20),endDate:T(1),color:'#0EA5E9',deps:[],progress:0,assignee:'',priority:'high',notes:''},
-    {id:'t10',level:2,parentId:'g32',name:'Architecture technique',startDate:T(-20),endDate:T(-16),progress:100,deps:['t3'],assignee:'Bob Dupont',priority:'high',color:'#0EA5E9',notes:'Node.js + PostgreSQL'},
-    {id:'t11',level:2,parentId:'g32',name:'API REST',startDate:T(-15),endDate:T(-5),progress:90,deps:['t10'],assignee:'Bob Dupont',priority:'high',color:'#0EA5E9',notes:''},
-    {id:'t12',level:2,parentId:'g32',name:'Authentification & sécurité',startDate:T(-4),endDate:T(1),progress:30,deps:['t11'],assignee:'Bob Dupont',priority:'high',color:'#0EA5E9',notes:''},
+    {id:t2id, isGroup:false, level:1, parentId:g1id,
+     name:'Tâche 2',
+     startDate:T(7), endDate:T(18),     // 10 jours ouvrés, après Tâche 1
+     color:'#B99EFF', deps:[t1id], progress:0,
+     assignee:'', priority:'medium', notes:'', montant:0},
 
-    // ── Groupe 3 : Intégration & Tests ────────────────────────────
-    {id:'g4',isGroup:true,level:0,name:'INTÉGRATION & TESTS',startDate:T(3),endDate:T(15),color:'#3DDBA8',deps:[],progress:0,assignee:'',priority:'high',notes:''},
-    {id:'t13',level:1,parentId:'g4',name:'Intégration API',startDate:T(3),endDate:T(6),progress:0,deps:['t9','t12'],assignee:'Clara Petit',priority:'high',color:'#3DDBA8',notes:''},
-    {id:'t14',level:1,parentId:'g4',name:'Tests fonctionnels',startDate:T(7),endDate:T(11),progress:0,deps:['t13'],assignee:'Eve Roux',priority:'medium',color:'#3DDBA8',notes:'Cypress E2E'},
-    {id:'t15',level:1,parentId:'g4',name:'Tests de performance',startDate:T(7),endDate:T(9),progress:0,deps:['t13'],assignee:'Bob Dupont',priority:'low',color:'#34D399',notes:'k6 load testing'},
-    {id:'t16',level:1,parentId:'g4',name:'Recette client',startDate:T(12),endDate:T(15),progress:0,deps:['t14'],assignee:'Alice Martin',priority:'high',color:'#3DDBA8',notes:'UAT'},
+    // ── Groupe 2 ───────────────────────────────────────────────────
+    {id:g2id, isGroup:true, level:0, parentId:null,
+     name:'Groupe 2',
+     startDate:T(21), endDate:T(29),
+     color:'#5B9CF6', deps:[], progress:0,
+     assignee:'', priority:'medium', notes:'', montant:0},
 
-    // ── Groupe 4 : Livraison ──────────────────────────────────────
-    {id:'g5',isGroup:true,level:0,name:'LIVRAISON',startDate:T(16),endDate:T(20),color:'#FF7140',deps:[],progress:0,assignee:'',priority:'high',notes:''},
-    {id:'t17',level:1,parentId:'g5',name:'Corrections finales',startDate:T(16),endDate:T(18),progress:0,deps:['t16'],assignee:'Clara Petit',priority:'medium',color:'#FF7140',notes:''},
-    {id:'t18',level:1,parentId:'g5',name:'Déploiement production',startDate:T(19),endDate:T(20),progress:0,deps:['t17'],assignee:'Bob Dupont',priority:'high',color:'#FF7140',notes:'Migration + rollout'},
+    {id:t3id, isGroup:false, level:1, parentId:g2id,
+     name:'Tâche 3',
+     startDate:T(21), endDate:T(29),    // 7 jours ouvrés
+     color:'#F87171', deps:[], progress:0,
+     assignee:'', priority:'medium', notes:'', montant:0},
   ];
 }
 
