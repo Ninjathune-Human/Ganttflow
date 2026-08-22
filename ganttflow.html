@@ -1,0 +1,2871 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GanttFlow Pro</title>
+<!-- Polices Google (non-bloquant) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1A1F2E;--bg2:#212737;--sf:#28304A;--sf2:#2F3A57;--sf3:#374460;
+  --b1:#3A4A68;--b2:#445580;--text:#D8E4F5;--dim:#A8BBDA;--mut:#6E84A8;
+  --acc:#5B9CF6;--acc-bg:rgba(91,156,246,.15);
+  --crit:#FF7140;--crit-bg:rgba(255,113,64,.15);
+  --green:#3DDBA8;--yel:#FBBF24;--red:#F87171;--pur:#B99EFF;
+  --wknd-bg:#141824;--wknd-text:#4A5A78;
+  --rh:44px;--sw:390px;--th:78px
+}
+:root[data-theme="light"]{
+  --bg:#F0F2F7;--bg2:#FFFFFF;--sf:#E8ECF5;--sf2:#DDE2EE;--sf3:#CFD6E8;
+  --b1:#C2CBDE;--b2:#B0BCD4;--text:#1A1F2E;--dim:#3A4A68;--mut:#6E84A8;
+  --acc:#2563EB;--acc-bg:rgba(37,99,235,.12);
+  --crit:#D95A1E;--crit-bg:rgba(217,90,30,.12);
+  --green:#059669;--yel:#D97706;--red:#DC2626;--pur:#7C3AED;
+  --wknd-bg:#E2E6F0;--wknd-text:#9AAAC2;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{height:50px;background:var(--bg2);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;z-index:200}
+.logo{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
+.logo-ic{width:32px;height:32px;background:linear-gradient(145deg,#1a3a6e,#2554a8);border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(37,84,168,.45),inset 0 1px 0 rgba(255,255,255,.1)}
+.sep{width:1px;height:22px;background:var(--b1);margin:0 2px;flex-shrink:0}
+#projName{background:transparent;border:none;color:#fff;font:600 14px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:4px 8px;border-radius:6px;cursor:text;transition:background .15s;min-width:120px}
+#projName:hover,#projName:focus{background:var(--sf);outline:none}
+.hsp{flex:1}
+.zgrp{display:flex;background:var(--sf);border-radius:7px;padding:2px;gap:1px}
+.zbtn{padding:4px 11px;border-radius:5px;border:none;background:transparent;color:var(--mut);font:500 11px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:all .15s}
+.zbtn.on{background:var(--sf2);color:var(--text)}
+.btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:6px;border:none;font:500 12px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap}
+.bp{background:var(--acc);color:#fff}.bp:hover{background:#4a8de8}
+.bg{background:transparent;color:var(--dim)}.bg:hover{background:var(--sf2);color:var(--text)}
+.bg.on{background:var(--crit-bg);color:var(--crit)}
+.bsm{padding:4px 9px;font-size:11px}
+
+/* BODY */
+.body{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.side{width:var(--sw);flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid var(--b1);background:var(--bg2);overflow:hidden}
+.side-hd{height:var(--th);display:flex;align-items:flex-end;padding:0 8px 8px 12px;border-bottom:1px solid var(--b1);flex-shrink:0;gap:0;position:relative}
+.side-add{display:flex;gap:4px;position:absolute;top:8px;right:8px}
+.sadd{padding:3px 8px;border-radius:6px;border:1px solid var(--b2);background:var(--sf2);color:var(--dim);font:700 10px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:all .15s;letter-spacing:.3px}
+.sadd:hover{background:var(--acc);border-color:var(--acc);color:#fff}
+.sadd-g:hover{background:var(--pur);border-color:var(--pur);color:#fff}
+.ch{font:600 9px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);flex-shrink:0}
+.ch-n{flex:1}.ch-s{width:66px;text-align:center}.ch-e{width:66px;text-align:center}.ch-p{width:44px;text-align:center}
+.tlist{flex:1;overflow-y:auto;overflow-x:hidden}
+.tlist::-webkit-scrollbar{width:3px}
+.tlist::-webkit-scrollbar-thumb{background:var(--b1);border-radius:2px}
+.trow{display:flex;align-items:center;height:var(--rh);padding:0 8px 0 12px;border-bottom:1px solid rgba(58,74,104,.5);cursor:pointer;transition:background .1s,opacity .15s;user-select:none;animation:fi .2s ease both;position:relative}
+.trow.dragging{opacity:.35;background:var(--sf3)!important}
+.trow.drag-over-top::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--acc);border-radius:1px;z-index:20;pointer-events:none}
+.trow.drag-over-bot::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--acc);border-radius:1px;z-index:20;pointer-events:none}
+.drag-handle{cursor:grab;padding:0 6px 0 0;color:var(--mut);font-size:11px;opacity:0;transition:opacity .15s;flex-shrink:0;line-height:1}
+.trow:hover .drag-handle{opacity:1}
+.trow.sel .drag-handle{opacity:.7}
+.trow:hover{background:var(--sf)}
+.trow.sel{background:var(--sf2)}
+.trow.cp .tname{color:var(--crit)}
+.tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-right:8px}
+.tname{flex:1;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);min-width:0}
+.tdt{width:66px;font:400 10px 'JetBrains Mono','Courier New',Courier,monospace;color:var(--dim);text-align:center;flex-shrink:0}
+.tpct{width:44px;font:500 10px 'JetBrains Mono','Courier New',Courier,monospace;color:var(--mut);text-align:center;flex-shrink:0}
+.movebtn{display:flex;flex-direction:column;gap:1px;flex-shrink:0;opacity:0;transition:opacity .15s;margin-left:4px}
+.trow:hover .movebtn{opacity:1}
+.trow.sel .movebtn{opacity:1}
+.mv{background:transparent;border:none;color:var(--mut);cursor:pointer;padding:1px 3px;border-radius:3px;font-size:9px;line-height:1;transition:background .1s,color .1s}
+.mv:hover{background:var(--sf3);color:var(--text)}
+.mv:disabled{opacity:.2;cursor:default}
+.dur-inp{width:34px;padding:2px 4px;border-radius:5px;border:1px solid transparent;background:transparent;color:var(--acc);font:500 9px 'JetBrains Mono','Courier New',Courier,monospace;text-align:center;cursor:text;-moz-appearance:textfield;transition:border-color .15s,background .15s}
+.dur-inp::-webkit-outer-spin-button,.dur-inp::-webkit-inner-spin-button{-webkit-appearance:none}
+.dur-inp:hover{border-color:var(--b2);background:var(--sf)}
+.dur-inp:focus{outline:none;border-color:var(--acc);background:var(--sf2);color:#fff}
+.cbdg{font:700 7px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:.5px;text-transform:uppercase;padding:1px 4px;border-radius:3px;background:var(--crit-bg);color:var(--crit);margin-left:4px;flex-shrink:0}
+.side-ft{padding:8px 12px;border-top:1px solid var(--b1);flex-shrink:0}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;color:var(--mut);gap:10px;font-size:13px;text-align:center;line-height:1.5}
+
+/* GANTT */
+.gantt{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.gscr{flex:1;overflow:auto;position:relative}
+.gscr::-webkit-scrollbar{width:5px;height:5px}
+.gscr::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.gscr::-webkit-scrollbar-corner{background:var(--bg)}
+.ginn{position:relative;min-height:100%}
+
+/* Timeline */
+.thead{position:sticky;top:0;z-index:100;background:var(--bg2);border-bottom:2px solid var(--b1);height:var(--th);overflow:hidden}
+.tmrow{display:flex;height:26px;border-bottom:1px solid var(--b1)}
+.tmc{flex-shrink:0;display:flex;align-items:center;padding-left:8px;font:600 11px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);border-right:1px solid var(--b1);overflow:hidden;white-space:nowrap}
+.tmc.wknd-cell{background:var(--wknd-bg)}
+.twrow{display:flex;height:24px;border-bottom:1px solid var(--b1)}
+.twc{flex-shrink:0;display:flex;align-items:center;justify-content:center;font:700 10px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--dim);border-right:1px solid var(--b1);overflow:hidden;letter-spacing:.3px;transition:background .15s}
+.twc.twc-active{color:var(--pur);background:rgba(185,158,255,.1)}
+.tdrow{display:flex;height:28px}
+/* Jours normaux */
+.tdc{flex-shrink:0;display:flex;align-items:center;justify-content:center;font:500 9px 'JetBrains Mono','Courier New',Courier,monospace;color:var(--dim);border-right:1px solid rgba(58,74,104,.4);overflow:hidden;background:var(--bg2)}
+/* Aujourd'hui */
+.tdc.tdh{color:var(--pur);font-weight:700;background:rgba(185,158,255,.12);border-right-color:rgba(185,158,255,.3)}
+/* Week-end : fond nettement plus sombre, texte très atténué */
+.tdc.twknd{background:var(--wknd-bg);color:var(--wknd-text);border-right-color:rgba(20,24,36,.8)}
+.tdc.twknd-sat{border-left:2px solid rgba(58,74,104,.6)}
+
+/* Gantt rows container */
+.grows{position:relative}
+.grow{height:var(--rh);position:relative;border-bottom:1px solid rgba(58,74,104,.3)}
+.grow:hover{background:rgba(255,255,255,.012)}
+
+/* Grid columns */
+.gcol{position:absolute;top:0;bottom:0;border-right:1px solid rgba(58,74,104,.25);pointer-events:none;background:transparent}
+/* Week-end : fond très différencié */
+.gcol.gw{background:rgba(14,17,28,.55);border-right-color:rgba(20,24,36,.7)}
+.gcol.gw-sat{border-left:2px solid rgba(58,74,104,.45)}
+/* Aujourd'hui */
+.gcol.gt{background:rgba(185,158,255,.14);border-right:2px solid rgba(185,158,255,.9)!important}
+
+/* Task bars */
+.tbar{position:absolute;height:26px;top:9px;border-radius:5px;display:flex;align-items:center;overflow:visible;cursor:pointer;transition:filter .15s,transform .1s;z-index:10;border-width:1.5px;border-style:solid;border-color:rgba(255,255,255,.7)!important;outline:none;}
+.tbar-inner{position:absolute;inset:0;border-radius:5px;overflow:hidden;pointer-events:none}
+/* Poignées de resize */
+.tbar-handle{position:absolute;top:0;bottom:0;width:8px;cursor:ew-resize;z-index:20;opacity:0;transition:opacity .15s;pointer-events:all}
+.tbar-handle::after{content:'';position:absolute;top:50%;transform:translateY(-50%);width:2px;height:14px;border-radius:1px;background:rgba(255,255,255,.7)}
+.tbar-handle.tbar-hl{left:0}.tbar-handle.tbar-hl::after{left:2px}
+.tbar-handle.tbar-hr{right:0}.tbar-handle.tbar-hr::after{right:2px}
+.tbar:hover .tbar-handle{opacity:1}
+/* Bouton suppression dépendance */
+#depDelBtn{position:fixed;z-index:8500;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:2px solid #fff;cursor:pointer;display:none;align-items:center;justify-content:center;font:700 12px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.5);transition:transform .1s}
+#depDelBtn:hover{transform:scale(1.2)}
+.tbar-link{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:12px;height:12px;border-radius:50%;background:var(--acc);border:2px solid #fff;cursor:crosshair;z-index:25;opacity:0;transition:opacity .15s;pointer-events:all;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.tbar-link.show{opacity:1}
+.tbar-link:hover{transform:translateY(-50%) scale(1.3);background:#fff;border-color:var(--acc)}
+[data-theme="light"] .tbar-link{border-color:#1a1f2e;background:var(--acc)}
+/* Ligne de liaison en cours */
+#depDragSvg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8000;display:none}
+/* Cible de dépendance au survol */
+.tbar.dep-target{filter:brightness(1.4)!important;outline:2px solid var(--acc)!important;outline-offset:2px!important}
+.tbar.moving{cursor:grabbing!important;filter:brightness(1.25);opacity:.85}
+.tbar:hover{filter:brightness(1.2);transform:scaleY(1.05)}
+.tbar-fill{position:absolute;left:0;top:0;bottom:0;opacity:.55;pointer-events:none;border-radius:5px 0 0 5px;transition:width .3s}
+.tbar-lbl{position:relative;z-index:1;padding:0 8px;font:500 11px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.tbar.crit{box-shadow:0 0 14px rgba(255,113,64,.25)}
+
+/* Today line */
+.tday-line{position:absolute;top:0;width:2px;background:var(--pur);opacity:.9;pointer-events:none;z-index:50}
+.tday-line::before{content:'▼';position:absolute;top:-4px;left:-4px;font-size:9px;color:var(--pur);font-style:normal}
+.tday-lbl{position:absolute;top:4px;font:600 9px 'JetBrains Mono','Courier New',Courier,monospace;color:var(--pur);background:var(--bg2);padding:1px 4px;border-radius:3px;white-space:nowrap;transform:translateX(-50%)}
+
+/* Dep SVG */
+.dep-svg{position:absolute;top:var(--th);left:0;pointer-events:none;z-index:20;overflow:visible}
+
+/* MODAL */
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.ovl.open{opacity:1;pointer-events:all}
+.modal{background:var(--sf);border:1px solid var(--b2);border-radius:14px;padding:24px;width:510px;max-width:96vw;max-height:90vh;overflow-y:auto;transform:translateY(10px);transition:transform .2s;scrollbar-width:thin}
+.ovl.open .modal{transform:translateY(0)}
+.modal::-webkit-scrollbar{width:3px}
+.modal::-webkit-scrollbar-thumb{background:var(--b1);border-radius:2px}
+.mtit{font-size:16px;font-weight:700;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.fg{margin-bottom:14px}
+.fl{display:block;font:600 10px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:5px}
+.fi,.fs{width:100%;padding:8px 11px;background:var(--bg);border:1px solid var(--b2);border-radius:7px;color:var(--text);font:400 13px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:border-color .15s}
+.fi:focus,.fs:focus{outline:none;border-color:var(--acc)}
+.fs option{background:var(--sf)}
+.frow{display:flex;gap:12px}.frow .fg{flex:1}
+.dchips{display:flex;flex-wrap:wrap;gap:5px;padding:7px;background:var(--bg);border:1px solid var(--b2);border-radius:7px;min-height:38px;align-items:flex-start}
+.chip{padding:3px 9px;border-radius:5px;background:var(--sf2);font-size:11px;cursor:pointer;transition:background .15s;color:var(--dim);border:1px solid transparent}
+.chip:hover{background:var(--sf3);color:var(--text)}
+.chip.on{background:var(--acc);color:#fff}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(--sf2);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--acc);cursor:pointer;box-shadow:0 0 6px rgba(91,156,246,.5)}
+.clrs{display:flex;gap:6px;flex-wrap:wrap}
+.csw{width:24px;height:24px;border-radius:6px;cursor:pointer;transition:transform .15s,box-shadow .15s;border:2px solid transparent}
+.csw:hover{transform:scale(1.15)}
+.csw.on{border-color:#fff;box-shadow:0 0 8px rgba(255,255,255,.25)}
+.mact{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--b1)}
+.bdel{background:transparent;border:none;font:500 12px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--red);cursor:pointer;padding:6px 10px;border-radius:6px;transition:background .15s;display:flex;align-items:center;gap:4px}
+.bdel:hover{background:rgba(248,113,113,.12)}
+
+/* STATS BAR */
+.sbar{height:30px;background:var(--bg2);border-top:1px solid var(--b1);display:flex;align-items:center;gap:14px;padding:0 14px;flex-shrink:0;font-size:10px;color:var(--mut);overflow:hidden}
+.st{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.sv{font:500 10px 'JetBrains Mono','Courier New',Courier,monospace;color:var(--dim)}
+.sv.cr{color:var(--crit)}
+.stsp{flex:1}
+
+/* TOOLTIP */
+.tip{position:fixed;background:var(--sf2);border:1px solid var(--b2);border-radius:9px;padding:11px 14px;font-size:12px;pointer-events:none;z-index:9999;opacity:0;transition:opacity .1s;min-width:170px;box-shadow:0 8px 32px rgba(0,0,0,.7)}
+.tip.vis{opacity:1}
+.tip-t{font-weight:700;color:#fff;margin-bottom:7px;font-size:13px}
+.tip-r{display:flex;justify-content:space-between;gap:14px;margin-top:4px;color:var(--mut)}
+.tip-v{color:var(--text);font:400 11px 'JetBrains Mono','Courier New',Courier,monospace}
+
+/* CONFIRM POPOVER */
+.cpop{position:fixed;z-index:9999;background:var(--sf2);border:1px solid var(--b2);border-radius:10px;padding:12px 14px;min-width:190px;box-shadow:0 8px 28px rgba(0,0,0,.7);opacity:0;pointer-events:none;transition:opacity .12s,transform .12s;transform:scale(.92);transform-origin:top left}
+.cpop.vis{opacity:1;pointer-events:all;transform:scale(1)}
+.cpop-msg{font-size:12px;color:var(--text);margin-bottom:10px;line-height:1.4}
+.cpop-act{display:flex;gap:6px;justify-content:flex-end}
+.cpop-ok{padding:5px 12px;border-radius:6px;border:none;background:var(--red);color:#fff;font:600 11px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:background .15s}
+.cpop-ok:hover{background:#e85555}
+.cpop-cancel{padding:5px 12px;border-radius:6px;border:none;background:var(--sf3);color:var(--dim);font:600 11px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer;transition:background .15s}
+.cpop-cancel:hover{background:var(--b1);color:var(--text)}
+/* TASK GROUPS / HIERARCHY */
+.trow.grp0{background:var(--sf3);border-bottom:2px solid var(--b2)}
+.trow.grp0:hover{background:#3d4e6e}
+.trow.grp1{background:rgba(47,58,87,.55)}
+.trow.grp1:hover{background:rgba(55,68,100,.7)}
+.trow.grp0 .tname{font:700 11px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:#fff}
+.trow.grp1 .tname{font-weight:600;color:var(--text)}
+.trow.grp0 .tdot,.trow.grp1 .tdot{border-radius:2px}
+.trow.grp0 .tdt,.trow.grp1 .tdt{opacity:.7}
+.trow.grp0 .tpct,.trow.grp1 .tpct{visibility:hidden}
+.trow.grp0 .dur-inp,.trow.grp1 .dur-inp{visibility:hidden}
+/* Sidebar resize handle */
+.side-resize{width:4px;background:transparent;cursor:col-resize;flex-shrink:0;transition:background .15s;position:relative;z-index:10}
+.side-resize:hover,.side-resize.dragging{background:var(--acc)}
+.lvl1 .tname{padding-left:14px}
+.lvl2 .tname{padding-left:28px}
+.grp-tri{font-size:8px;flex-shrink:0;color:var(--dim);padding:0 3px 0 0;user-select:none}
+/* GANTT Group summary bars */
+/* Jour férié */
+.tdc.tferie{background:#1a1428;color:#F87171;border-right-color:rgba(248,113,113,.3);font-weight:700}
+.gcol.gferie{background:rgba(248,113,113,.07);border-right-color:rgba(248,113,113,.18)!important}
+.gbar{position:absolute;border-radius:2px;cursor:pointer;z-index:10;overflow:visible;transition:opacity .15s}
+.gbar:hover{opacity:.85!important}
+.gbar-cap{position:absolute;bottom:-5px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;pointer-events:none}
+.gbar-lbl{position:absolute;top:calc(100% + 2px);left:2px;font:600 9px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;white-space:nowrap;pointer-events:none}
+/* FACTURATION */
+.fact-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px}
+.fact-table th{text-align:left;font:700 9px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);padding:6px 10px;border-bottom:2px solid var(--b1)}
+.fact-table th.num{text-align:right}
+.fact-table td{padding:7px 10px;border-bottom:1px solid rgba(58,74,104,.3);vertical-align:middle}
+.fact-table td.num{text-align:right;font:400 11px 'JetBrains Mono','Courier New',Courier,monospace;white-space:nowrap}
+.fact-table tr.grp-row>td{font:700 11px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#fff;background:var(--sf3);padding:8px 10px}
+.fact-table tr.grp-row>td.num{font:700 11px 'JetBrains Mono','Courier New',Courier,monospace}
+.fact-table tr:hover>td{background:rgba(255,255,255,.03)}
+.fact-table tr.no-budget>td{opacity:.4}
+.fact-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.fact-kpi{background:var(--sf2);border-radius:8px;padding:12px 14px;border:1px solid var(--b1)}
+.fact-kpi-lbl{font:600 9px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);margin-bottom:4px}
+.fact-kpi-val{font:700 18px 'JetBrains Mono','Courier New',Courier,monospace;color:#fff}
+.fact-kpi-sub{font:400 10px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--dim);margin-top:2px}
+.fact-pct-bar{width:50px;height:4px;background:var(--sf3);border-radius:2px;display:inline-block;vertical-align:middle;margin-left:6px;overflow:hidden}
+.fact-pct-fill{height:100%;border-radius:2px;background:var(--green)}
+
+.imp-area{border:2px dashed var(--b2);border-radius:10px;padding:20px;text-align:center;color:var(--mut);cursor:pointer;transition:all .2s;font-size:12px}
+.imp-area:hover{border-color:var(--acc);color:var(--dim);background:var(--acc-bg)}
+
+/* Animations */
+@keyframes fi{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+@keyframes barIn{from{opacity:0;transform:scaleX(.8)}to{opacity:1;transform:scaleX(1)}}
+.tbar{animation:barIn .25s ease both}
+
+/* ── THÈME JOUR ─────────────────────────────────────── */
+[data-theme="light"] body{background:var(--bg)}
+[data-theme="light"] .hdr{background:var(--bg2);border-color:var(--b1)}
+[data-theme="light"] .side{background:var(--bg2);border-color:var(--b1)}
+[data-theme="light"] .side-hd{border-color:var(--b1)}
+[data-theme="light"] .trow{border-color:rgba(194,203,222,.6)}
+[data-theme="light"] .trow:hover{background:var(--sf)}
+[data-theme="light"] .trow.sel{background:var(--sf2)}
+[data-theme="light"] .trow.grp0{background:var(--sf3);border-color:var(--b1)}
+[data-theme="light"] .trow.grp0:hover{background:var(--sf2)}
+[data-theme="light"] .trow.grp1{background:rgba(221,226,238,.7)}
+[data-theme="light"] .trow.grp0 .tname{color:var(--text)}
+[data-theme="light"] .thead{background:var(--bg2);border-color:var(--b1)}
+[data-theme="light"] .tmc{color:var(--text);border-color:var(--b1)}
+[data-theme="light"] .twc{color:var(--dim);border-color:var(--b1)}
+[data-theme="light"] .twc.twc-active{color:var(--pur);background:rgba(124,58,237,.08)}
+[data-theme="light"] .tdc{background:var(--bg2);color:var(--dim);border-color:rgba(194,203,222,.5)}
+[data-theme="light"] .tdc.tdh{background:rgba(124,58,237,.08);color:var(--pur);border-color:rgba(124,58,237,.25)}
+[data-theme="light"] .tdc.twknd{background:var(--wknd-bg);color:var(--wknd-text)}
+[data-theme="light"] .tdc.tferie{background:#FFF0F0;color:#CC2222}
+[data-theme="light"] .gcol{border-color:rgba(194,203,222,.35)}
+[data-theme="light"] .gcol.gw{background:rgba(0,0,0,.04)}
+[data-theme="light"] .gcol.gt{background:rgba(124,58,237,.06);border-color:rgba(124,58,237,.5)!important}
+[data-theme="light"] .gcol.gferie{background:rgba(220,38,38,.05)}
+[data-theme="light"] .grow{border-color:rgba(194,203,222,.3)}
+[data-theme="light"] .grow:hover{background:rgba(0,0,0,.02)}
+[data-theme="light"] .gscr::-webkit-scrollbar-thumb{background:var(--b1)}
+[data-theme="light"] .tlist::-webkit-scrollbar-thumb{background:var(--b1)}
+[data-theme="light"] .modal{background:var(--sf);border-color:var(--b2)}
+[data-theme="light"] .fi,.fi:focus,[data-theme="light"] .fs{background:var(--bg2);border-color:var(--b2);color:var(--text)}
+[data-theme="light"] .dchips{background:var(--bg2);border-color:var(--b2)}
+[data-theme="light"] .chip{background:var(--sf2);color:var(--dim)}
+[data-theme="light"] .chip:hover{background:var(--sf3)}
+[data-theme="light"] .chip.on{background:var(--acc);color:#fff}
+[data-theme="light"] .tip{background:var(--bg2);border-color:var(--b1);box-shadow:0 4px 20px rgba(0,0,0,.15)}
+[data-theme="light"] .tip-r{color:var(--dim)}
+[data-theme="light"] .tip-v{color:var(--text)}
+[data-theme="light"] .tip-t{color:var(--text)}
+[data-theme="light"] .cpop{background:var(--bg2);border-color:var(--b1);box-shadow:0 4px 20px rgba(0,0,0,.15)}
+[data-theme="light"] .cpop-msg{color:var(--text)}
+[data-theme="light"] .cpop-cancel{background:var(--sf2);color:var(--dim)}
+[data-theme="light"] .tbar-lbl{color:var(--text);text-shadow:none}
+[data-theme="light"] .gbar-lbl{color:var(--text)}
+[data-theme="light"] .sbar{background:var(--bg2);border-color:var(--b1)}
+[data-theme="light"] .dur-inp{color:var(--acc)}
+[data-theme="light"] .dur-inp:hover{background:var(--sf);border-color:var(--b1)}
+[data-theme="light"] .dur-inp:focus{background:var(--sf2);color:var(--acc)}
+[data-theme="light"] .side-resize:hover,.side-resize.dragging{background:var(--acc)}
+[data-theme="light"] .fact-kpi{background:var(--sf2);border-color:var(--b1)}
+[data-theme="light"] .fact-kpi-val{color:var(--text)}
+[data-theme="light"] #projName{color:var(--text)}
+[data-theme="light"] #projName:hover,[data-theme="light"] #projName:focus{background:var(--sf)}
+[data-theme="light"] .zgrp{background:var(--sf)}
+[data-theme="light"] .zbtn.on{background:var(--sf2);color:var(--text)}
+[data-theme="light"] input[type=range]{background:var(--sf2)}
+[data-theme="light"] .tbar{border-color:rgba(0,0,0,.75)!important;outline:none}
+
+@media print{
+  .hdr,.sfooter,.sbar,.btn,.zbtn,.bg{display:none!important}
+  .side{border:none}
+  body{background:white!important;overflow:visible!important}
+  .body,.gscr,.tlist{overflow:visible!important;height:auto!important}
+  /* Supprimer tous les fonds */
+  .bg2,.sf,.sf2,.sf3,.side,.gantt,.grows,.grow,.thead,.tlist,.trow,
+  .tmc,.twc,.tdc,.gcol{background:transparent!important;background-color:transparent!important}
+  /* Fonds de week-end très légers */
+  .gcol.gw{background:rgba(0,0,0,.04)!important}
+  .tdc.twknd{background:rgba(0,0,0,.04)!important;color:#888!important}
+  /* Bordures lisibles */
+  .trow{border-bottom:1px solid #ddd!important}
+  .tname,.tdt,.tpct,.ch{color:#222!important}
+  /* Barres : fond transparent, bordure colorée, texte sombre */
+  .tbar{
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    background:transparent!important;
+    border:2px solid var(--bar-col,#5B9CF6)!important;
+    outline:none!important;
+  }
+  .tbar-fill{display:none!important}
+  .tbar-lbl{
+    color:#1a1f2e!important;
+    text-shadow:none!important;
+    font:700 10px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;
+  }
+  /* Barres de groupe */
+  .gbar{
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    background:var(--bar-col,#5B9CF6)!important;
+    opacity:1!important;
+  }
+  .gbar-lbl{color:#1a1f2e!important;text-shadow:none!important}
+  /* Forcer les couleurs */
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-ic">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Row 1: long bar starting from left -->
+        <rect x="2" y="3" width="11" height="3" rx="1.5" fill="#5B9CF6"/>
+        <!-- Row 2: medium bar, shifted right -->
+        <rect x="5" y="8.5" width="9" height="3" rx="1.5" fill="#FF7140"/>
+        <!-- Row 3: shorter bar, shifted further right -->
+        <rect x="8" y="14" width="10" height="3" rx="1.5" fill="#B99EFF"/>
+      </svg>
+    </div>
+    GanttFlow
+  </div>
+  <div class="sep"></div>
+  <input id="projName" value="Refonte Site Web" spellcheck="false" title="Cliquer pour renommer">
+  <div class="sep"></div>
+  <div class="zgrp">
+    <button class="zbtn on" data-z="day" onclick="setZoom('day')">Jours</button>
+    <button class="zbtn" data-z="week" onclick="setZoom('week')">Semaines</button>
+    <button class="zbtn" data-z="month" onclick="setZoom('month')">Mois</button>
+  </div>
+  <button class="btn bg on" id="btnCP" onclick="toggleCP()" title="Afficher/masquer le chemin critique">⚡ Chemin critique</button>
+  <button class="btn bg bsm" onclick="toggleDeps()" id="btnDeps" title="Afficher/masquer les dépendances">🔗 Dépendances</button>
+  <button class="btn bg bsm on" onclick="toggleWknd()" id="btnWknd" title="Afficher/masquer les week-ends">📅 Week-ends</button>
+  <button class="btn bg bsm" onclick="toggleTheme()" id="btnTheme" title="Thème jour / nuit">🌙</button>
+  <div class="hsp"></div>
+  <button class="btn bg bsm" onclick="openMSProject()">🗂 MS Project</button>
+  <button class="btn bg bsm" onclick="exportExcel()">📊 Export Excel</button>
+  <button class="btn bg bsm" onclick="openFacturation()">💶 Facturation</button>
+  <button class="btn bg bsm" onclick="window.print()">🖨 Imprimer</button>
+  <button class="btn bg bsm" onclick="clearState(event)" title="Réinitialiser le projet" style="color:var(--red)">↺ Reset</button>
+</div>
+
+<!-- BODY -->
+<div class="body">
+  <!-- SIDEBAR -->
+  <div class="side">
+    <div class="side-hd">
+      <div class="side-add">
+        <button class="sadd" onclick="openModal()" title="Nouvelle tâche">+T</button>
+        <button class="sadd sadd-g" onclick="openModalGroup()" title="Nouveau groupe">+G</button>
+      </div>
+      <!-- Miroir exact de la structure d'une trow -->
+      <div class="drag-handle" style="opacity:0;pointer-events:none">⠿</div>
+      <div class="tdot" style="opacity:0"></div>
+      <div class="ch ch-n">Tâche</div>
+      <div class="ch ch-s">Début</div>
+      <div class="ch ch-e">Fin</div>
+      <div class="ch ch-p">%</div>
+      <div class="ch" style="width:34px;text-align:center" id="chDur">NbJ</div>
+      <div class="movebtn" style="opacity:0;pointer-events:none">
+        <button class="mv">▲</button>
+        <button class="mv">▼</button>
+      </div>
+    </div>
+    <div class="tlist" id="tList"></div>
+  </div>
+  <div class="side-resize" id="sideResize" title="Redimensionner"></div>
+
+  <!-- GANTT -->
+  <div class="gantt">
+    <div class="gscr" id="gScr">
+      <div class="ginn" id="gInn">
+        <div class="thead" id="thead"></div>
+        <div class="grows" id="grows"></div>
+        <svg class="dep-svg" id="depSvg" width="0" height="0"></svg>
+        <div class="tday-line" id="todayLine" style="display:none">
+          <div class="tday-lbl" id="todayLbl"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="sbar">
+  <div class="st">📋 Tâches: <span class="sv" id="sTotal">0</span></div>
+  <div class="sep" style="margin:0 2px"></div>
+  <div class="st">📅 Durée: <span class="sv" id="sDur">-</span></div>
+  <div class="sep" style="margin:0 2px"></div>
+  <div class="st">✅ Avancement: <span class="sv" id="sProg">0%</span></div>
+  <div class="sep" style="margin:0 2px"></div>
+  <div class="st">⚡ CP: <span class="sv cr" id="sCP">-</span></div>
+  <div class="sep" style="margin:0 2px"></div>
+  <div class="st">💰 Budget: <span class="sv" id="sBudget">-</span></div>
+  <div class="st">✔ Réalisé: <span class="sv" style="color:var(--green)" id="sRealise">-</span></div>
+  <div class="stsp"></div>
+  <div class="st" style="color:var(--dim)">GanttFlow Pro v1.0</div>
+</div>
+
+<!-- MODAL Add/Edit Task -->
+<div class="ovl" id="ovl" onclick="bgClose(event)">
+  <div class="modal" id="modal">
+    <div class="mtit" id="mTitle">+ Nouvelle tâche</div>
+
+    <div class="fg">
+      <label class="fl">Nom de la tâche *</label>
+      <input class="fi" id="fName" placeholder="Ex : Design des maquettes" autocomplete="off">
+    </div>
+
+    <div class="frow" style="align-items:flex-end">
+      <div class="fg">
+        <label class="fl">Date de début *</label>
+        <input class="fi" id="fStart" type="date">
+      </div>
+      <div class="fg">
+        <label class="fl">Date de fin *</label>
+        <input class="fi" id="fEnd" type="date">
+      </div>
+      <div class="fg" style="flex:0 0 80px">
+        <label class="fl">Durée (j)</label>
+        <input class="fi" id="fDur" type="number" min="1" placeholder="1" style="text-align:center">
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fl">Avancement : <span id="pctLbl" style="color:var(--acc)">0%</span></label>
+      <input type="range" id="fProg" min="0" max="100" value="0" oninput="updPct(this.value)">
+    </div>
+
+    <div class="frow">
+      <div class="fg">
+        <label class="fl">Montant (€)</label>
+        <input class="fi" id="fMontant" type="number" min="0" step="0.01" placeholder="0.00" style="text-align:right">
+      </div>
+      <div class="fg">
+        <label class="fl">Montant à l'avancement <span id="montantAvLbl" style="color:var(--green);font-weight:700"></span></label>
+        <input class="fi" id="fMontantAv" type="number" readonly style="text-align:right;opacity:.6;cursor:default" placeholder="calculé auto">
+      </div>
+    </div>
+
+    <div class="frow">
+      <div class="fg">
+        <label class="fl">Responsable</label>
+        <input class="fi" id="fAssignee" placeholder="Nom ou équipe">
+      </div>
+      <div class="fg">
+        <label class="fl">Priorité</label>
+        <select class="fs" id="fPrio">
+          <option value="low">🟢 Basse</option>
+          <option value="medium" selected>🟡 Normale</option>
+          <option value="high">🔴 Haute</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fl">Couleur</label>
+      <div class="clrs" id="colorPicker"></div>
+    </div>
+
+    <div class="fg">
+      <label class="fl">Dépendances <span style="font-weight:400;text-transform:none;color:var(--dim);font-size:10px">(se terminent avant cette tâche)</span></label>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div>
+          <div style="font:600 8px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:4px">▶ Groupes</div>
+          <div class="dchips" id="depChipsGroups"></div>
+        </div>
+        <div>
+          <div style="font:600 8px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:4px">● Tâches</div>
+          <div class="dchips" id="depChipsTasks"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="fl">Notes</label>
+      <input class="fi" id="fNotes" placeholder="Description, notes...">
+    </div>
+
+    <div class="mact">
+      <button class="bdel" id="btnDel" onclick="delTask(event)" style="display:none">🗑 Supprimer</button>
+      <div style="display:flex;gap:8px;margin-left:auto">
+        <button class="btn bg" onclick="closeModal()">Annuler</button>
+        <button class="btn bp" onclick="saveTask()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM POPOVER -->
+<div class="cpop" id="cpop">
+  <div class="cpop-msg" id="cpopMsg"></div>
+  <div class="cpop-act">
+    <button class="cpop-cancel" onclick="closePop()">Annuler</button>
+    <button class="cpop-ok" id="cpopOk">Supprimer</button>
+  </div>
+</div>
+
+<!-- MODAL MS PROJECT -->
+<div class="ovl" id="ovlMSP" onclick="if(event.target===this)closeMSProject()">
+  <div class="modal" style="width:500px">
+    <div class="mtit">🗂 MS Project — Import / Export</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <div style="background:var(--sf2);border:1px solid var(--b2);border-radius:10px;padding:16px;text-align:center">
+        <div style="font-size:28px;margin-bottom:8px">⬆</div>
+        <div style="font:600 12px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);margin-bottom:4px">Importer</div>
+        <div style="font-size:11px;color:var(--mut);margin-bottom:12px">Format XML (.xml)<br>MS Project 2007–2021</div>
+        <button class="btn bp bsm" onclick="document.getElementById('mspFileInp').click()" style="width:100%">Choisir un fichier .xml</button>
+        <input type="file" id="mspFileInp" accept=".xml,.mspdi" style="display:none" onchange="importMSProject(this)">
+      </div>
+      <div style="background:var(--sf2);border:1px solid var(--b2);border-radius:10px;padding:16px;text-align:center">
+        <div style="font-size:28px;margin-bottom:8px">⬇</div>
+        <div style="font:600 12px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);margin-bottom:4px">Exporter</div>
+        <div style="font-size:11px;color:var(--mut);margin-bottom:12px">Format MSPDI XML<br>Compatible MS Project</div>
+        <button class="btn bp bsm" onclick="exportMSProject()" style="width:100%">Exporter en .xml</button>
+      </div>
+    </div>
+    <div style="background:var(--sf3);border-radius:8px;padding:12px 14px;font-size:11px;color:var(--dim);line-height:1.6">
+      <strong style="color:var(--dim)">ℹ Notes de compatibilité :</strong><br>
+      • Export : format MSPDI (XML) lisible par MS Project 2007 et versions ultérieures<br>
+      • Import : ouvrez le .mpp dans MS Project → Enregistrer sous → XML (.xml)<br>
+      • Les groupes GanttFlow sont traduits en tâches récapitulatives MS Project<br>
+      • Les dépendances Fin→Début (FS) sont conservées dans les deux sens
+    </div>
+    <div id="mspErr" style="margin-top:10px;font-size:11px;color:var(--red)"></div>
+    <div class="mact" style="margin-top:16px">
+      <div></div>
+      <button class="btn bg" onclick="closeMSProject()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FACTURATION -->
+<div class="ovl" id="ovlFact" onclick="if(event.target===this)closeFact()">
+  <div class="modal" style="width:640px;max-height:85vh">
+    <div class="mtit">💶 Point de facturation</div>
+    <div id="factContent"></div>
+    <div class="mact">
+      <button class="btn bg bsm" onclick="printFact()">🖨 Imprimer</button>
+      <button class="btn bp bsm" onclick="closeFact()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<svg id="depDragSvg"><defs><marker id="ddArrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#5B9CF6"/></marker></defs><path id="ddPath" stroke="#5B9CF6" stroke-width="2" stroke-dasharray="6,3" fill="none" marker-end="url(#ddArrow)"/></svg>
+<!-- TOOLTIP -->
+<!-- BOUTON SUPPRESSION DEPENDANCE -->
+<button id="depDelBtn" onclick="confirmDelDep()">×</button>
+
+<div class="tip" id="tip">
+  <div class="tip-t" id="tipT"></div>
+  <div class="tip-r">Début <span class="tip-v" id="tipS"></span></div>
+  <div class="tip-r">Fin <span class="tip-v" id="tipE"></span></div>
+  <div class="tip-r">Durée <span class="tip-v" id="tipD"></span></div>
+  <div class="tip-r">Avancement <span class="tip-v" id="tipPct"></span></div>
+  <div class="tip-r" id="tipARow">Responsable <span class="tip-v" id="tipA"></span></div>
+  <div class="tip-r" id="tipNRow" style="display:none">Notes <span class="tip-v" id="tipN" style="max-width:120px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap"></span></div>
+  <div class="tip-r" id="tipCRow" style="display:none">Chemin <span class="tip-v" style="color:var(--crit)">⚡ Critique</span></div>
+  <div class="tip-r" id="tipFRow" style="display:none">Marge <span class="tip-v" id="tipF"></span></div>
+  <div class="tip-r" id="tipBRow" style="display:none">Budget <span class="tip-v" id="tipB"></span></div>
+  <div class="tip-r" id="tipRRow" style="display:none">Réalisé <span class="tip-v" id="tipR" style="color:var(--green)"></span></div>
+</div>
+
+<script>
+// =====================================================
+// CONSTANTS
+// =====================================================
+const DAY = 86400000;
+const PALETTE = ['#4F8EF7','#A78BFA','#34D399','#FBBF24','#F87171','#38BDF8','#FB7185','#4ADE80','#E879F9','#FF6B2B','#FCD34D','#67E8F9'];
+const ZOOM_DW = {day:28, week:14, month:5};
+
+// =====================================================
+// STATE
+// =====================================================
+const S = {
+  tasks: [],
+  zoom: 'day',
+  dw: ZOOM_DW['day'],
+  showCP: true,
+  showDeps: true,
+  hideWknd: false,
+  wkndInDur: false,  // kept for JSON compat
+  selId: null,
+  editId: null,
+  cpIds: new Set(),
+  cpData: {},
+  _dayMap: [],
+  _totalW: 0,
+};
+
+// =====================================================
+// UTILS
+// =====================================================
+// Convertit n'importe quelle couleur CSS → rgba(r,g,b,a)
+function hexToRgba(col, a) {
+  // Si déjà rgb(r,g,b) ou rgba(r,g,b,x)
+  const rgb = col.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if(rgb) return `rgba(${rgb[1]},${rgb[2]},${rgb[3]},${a})`;
+  // Hex #RRGGBB ou #RGB
+  const h = col.replace('#','');
+  const full = h.length===3 ? h.split('').map(c=>c+c).join('') : h;
+  const r=parseInt(full.slice(0,2),16);
+  const g=parseInt(full.slice(2,4),16);
+  const b=parseInt(full.slice(4,6),16);
+  if(isNaN(r)) return `rgba(91,156,246,${a})`; // fallback bleu
+  return `rgba(${r},${g},${b},${a})`;
+}
+const fmtEur = v => new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v);
+
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// =====================================================
+// DATE HELPERS
+// =====================================================
+const fmt = d => {
+  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+};
+const parse = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+const disp = s => parse(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
+const dispL = s => parse(s).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'2-digit'});
+const dur = t => Math.max(1, Math.round((parse(t.endDate)-parse(t.startDate))/DAY)+1);
+
+// ── Jours fériés France (calendrier perpétuel) ────────────────
+function easterDate(y) {
+  // Algorithme de Butcher
+  const a=y%19, b=Math.floor(y/100), c=y%100;
+  const d=Math.floor(b/4), e=b%4, f=Math.floor((b+8)/25);
+  const g=Math.floor((b-f+1)/3), h=(19*a+b-d-g+15)%30;
+  const i=Math.floor(c/4), k=c%4;
+  const l=(32+2*e+2*i-h-k)%7;
+  const m=Math.floor((a+11*h+22*l)/451);
+  const month=Math.floor((h+l-7*m+114)/31);
+  const day=((h+l-7*m+114)%31)+1;
+  return new Date(y, month-1, day);
+}
+
+const _ferieCache = {};
+function feriesAnnee(y) {
+  if(_ferieCache[y]) return _ferieCache[y];
+  const easter = easterDate(y);
+  const add = (d, n) => new Date(d.getTime() + n*DAY);
+  const fmtK = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const set = new Set([
+    `${y}-01-01`, // Jour de l'An
+    fmtK(add(easter, 1)), // Lundi de Pâques
+    `${y}-05-01`, // Fête du Travail
+    `${y}-05-08`, // Victoire 1945
+    fmtK(add(easter, 39)), // Ascension
+    fmtK(add(easter, 50)), // Lundi de Pentecôte
+    `${y}-07-14`, // Fête Nationale
+    `${y}-08-15`, // Assomption
+    `${y}-11-01`, // Toussaint
+    `${y}-11-11`, // Armistice
+    `${y}-12-25`, // Noël
+  ]);
+  _ferieCache[y] = set;
+  return set;
+}
+
+// Retourne true si le jour est non-ouvré (weekend ou férié français)
+const wknd = d => {
+  if(d.getDay()===0 || d.getDay()===6) return true;
+  const y = d.getFullYear();
+  const key = `${y}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return feriesAnnee(y).has(key);
+};
+
+// Compte toujours les jours ouvrés (week-ends exclus)
+function workDaysStrict(t) {
+  let count=0, d=new Date(parse(t.startDate));
+  const end=parse(t.endDate);
+  while(d<=end){ if(!wknd(d)) count++; d=new Date(d.getTime()+DAY); }
+  return Math.max(1,count);
+}
+// Jours affichés — toujours en jours ouvrés (week-ends exclus)
+function workDays(t) {
+  return workDaysStrict(t);
+}
+// Ajoute n jours ouvrés à partir de startStr (saute toujours les week-ends)
+function addWorkDaysStrict(startStr, n) {
+  let count=0, d=new Date(parse(startStr));
+  while(count < n-1){ d=new Date(d.getTime()+DAY); if(!wknd(d)) count++; }
+  return fmt(d);
+}
+function addWorkDays(startStr, n) {
+  return addWorkDaysStrict(startStr, n);
+}
+
+const wkNum = d => {
+  const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  dt.setUTCDate(dt.getUTCDate()+4-(dt.getUTCDay()||7));
+  const y=new Date(Date.UTC(dt.getUTCFullYear(),0,1));
+  return Math.ceil(((dt-y)/DAY+1)/7);
+};
+
+function getBounds() {
+  if(!S.tasks.length) { const n=new Date();n.setHours(0,0,0,0); return {start:new Date(n.getTime()-7*DAY),days:45}; }
+  const starts=S.tasks.map(t=>parse(t.startDate));
+  const ends=S.tasks.map(t=>parse(t.endDate));
+  const mn=new Date(Math.min(...starts));
+  const mx=new Date(Math.max(...ends));
+  const pad=S.zoom==='day'?5:S.zoom==='week'?14:30;
+  return {start:new Date(mn.getTime()-pad*DAY), days:Math.round((mx-mn)/DAY)+1+pad*2};
+}
+
+function buildDayMap(start, days) {
+  const map = [];
+  let x = 0;
+  for (let i = 0; i < days; i++) {
+    const d = new Date(start.getTime() + i * DAY);
+    map.push(x);
+    const isWknd = wknd(d);
+    if (!S.hideWknd || !isWknd) x += S.dw;
+  }
+  S._dayMap = map;
+  S._totalW = x;
+}
+
+function xOf(dateStr) {
+  const {start} = getBounds();
+  const i = Math.round((parse(dateStr) - start) / DAY);
+  if (i < 0) return 0;
+  if (i >= S._dayMap.length) return S._totalW;
+  return S._dayMap[i];
+}
+
+// =====================================================
+// CPM ALGORITHM
+// =====================================================
+// =====================================================
+// GROUP / HIERARCHY helpers
+// =====================================================
+function autoUpdateGroups() {
+  // ── Passe 1 : construire la map parent → enfants ──────────────────
+  const ch = {};
+
+  // a) via parentId explicite
+  S.tasks.forEach(t => {
+    if(t.parentId){ (ch[t.parentId]=ch[t.parentId]||[]).push(t); }
+  });
+
+  // b) inférence positionnelle pour les groupes sans enfants déclarés
+  S.tasks.forEach((t, i) => {
+    if(!t.isGroup) return;
+    if(ch[t.id] && ch[t.id].length) return; // déjà renseigné
+    const lvl = t.level||0;
+    const kids = [];
+    for(let j=i+1; j<S.tasks.length; j++){
+      const u = S.tasks[j];
+      if(u.isGroup && (u.level||0) <= lvl) break;
+      kids.push(u);
+    }
+    if(kids.length) ch[t.id] = kids;
+  });
+
+  // ── Passe 2 : recalculer les dates, du niveau le plus profond vers la racine ──
+  // On trie tous les groupes par niveau DESC, puis on recalcule
+  // → quand un groupe parent est traité, ses enfants-groupes ont déjà leurs dates à jour
+  const groups = S.tasks
+    .filter(t => t.isGroup)
+    .sort((a, b) => (b.level||0) - (a.level||0));
+
+  groups.forEach(grp => {
+    const kids = ch[grp.id];
+    if(!kids || !kids.length) return;
+    const starts = kids.map(k => parse(k.startDate).getTime());
+    const ends   = kids.map(k => parse(k.endDate).getTime());
+    grp.startDate = fmt(new Date(Math.min(...starts)));
+    grp.endDate   = fmt(new Date(Math.max(...ends)));
+  });
+}
+
+function computeCPM() {
+  // Only leaf tasks (not groups) participate in CPM
+  const tasks=S.tasks.filter(t=>!t.isGroup);
+  if(!tasks.length){S.cpIds=new Set();S.cpData={};return;}
+  const map={};
+  tasks.forEach(t=>map[t.id]=t);
+  const succ={};
+  tasks.forEach(t=>succ[t.id]=[]);
+  tasks.forEach(t=>t.deps.forEach(d=>{if(succ[d])succ[d].push(t.id);}));
+
+  // Kahn's topological sort
+  const indeg={};
+  tasks.forEach(t=>indeg[t.id]=t.deps.filter(d=>map[d]).length);
+  const q=tasks.filter(t=>indeg[t.id]===0).map(t=>t.id);
+  const ord=[];
+  const tmp={...indeg};
+  while(q.length){
+    const id=q.shift(); ord.push(id);
+    (succ[id]||[]).forEach(s=>{tmp[s]--;if(tmp[s]===0)q.push(s);});
+  }
+
+  const cp={};
+  tasks.forEach(t=>cp[t.id]={es:0,ef:0,ls:0,lf:0,float:0});
+
+  // Forward pass
+  ord.forEach(id=>{
+    const t=map[id]; const d=dur(t);
+    const deps=t.deps.filter(x=>map[x]);
+    const es=deps.length?Math.max(...deps.map(d=>cp[d].ef)):0;
+    cp[id].es=es; cp[id].ef=es+d;
+  });
+
+  const projEnd=Math.max(...tasks.map(t=>cp[t.id].ef));
+
+  // Backward pass
+  [...ord].reverse().forEach(id=>{
+    const sc=succ[id]||[];
+    const lf=sc.length?Math.min(...sc.map(s=>cp[s].ls)):projEnd;
+    const d=dur(map[id]);
+    cp[id].lf=lf; cp[id].ls=lf-d;
+    cp[id].float=cp[id].ls-cp[id].es;
+  });
+
+  S.cpData=cp;
+  S.cpIds=new Set(tasks.filter(t=>cp[t.id].float<=0).map(t=>t.id));
+}
+
+// =====================================================
+// AUTO-SCHEDULING
+// =====================================================
+// Prochain jour ouvré à partir d'une date (inclus si ouvré)
+function nextWorkDay(d) {
+  const r = new Date(d);
+  while(wknd(r)) r.setTime(r.getTime()+DAY);
+  return r;
+}
+
+function autoScheduleTasks() {
+  const map={};
+  S.tasks.forEach(t=>map[t.id]=t);
+
+  // Tri topologique (Kahn) sur les tâches feuilles
+  const leaves = S.tasks.filter(t=>!t.isGroup);
+  const indeg={};
+  leaves.forEach(t=>indeg[t.id]=(t.deps||[]).filter(d=>map[d]&&!map[d].isGroup).length);
+  const q=leaves.filter(t=>indeg[t.id]===0).map(t=>t.id);
+  const ord=[];
+  const succ={};
+  leaves.forEach(t=>succ[t.id]=[]);
+  leaves.forEach(t=>(t.deps||[]).forEach(d=>{if(succ[d])succ[d].push(t.id);}));
+  const tmp={...indeg};
+  while(q.length){
+    const id=q.shift(); ord.push(id);
+    (succ[id]||[]).forEach(s=>{tmp[s]--;if(tmp[s]===0)q.push(s);});
+  }
+
+  ord.forEach(id=>{
+    const t=map[id];
+    const validDeps=(t.deps||[]).filter(d=>map[d]);
+    if(!validDeps.length) return;
+
+    // Date début = prochain jour ouvré après la fin du dernier prédécesseur
+    const maxEnd=Math.max(...validDeps.map(d=>parse(map[d].endDate).getTime()));
+    const candidate=nextWorkDay(new Date(maxEnd+DAY));
+    const oldStart=parse(t.startDate);
+
+    // Ne déplacer que si la tâche chevauche un prédécesseur (candidate > oldStart)
+    if(candidate.getTime()<=oldStart.getTime()) return;
+
+    // Préserver la durée ouvrée stricte
+    const wd=workDaysStrict(t);
+    t.startDate=fmt(candidate);
+    t.endDate=addWorkDaysStrict(fmt(candidate), wd);
+  });
+}
+
+// =====================================================
+// RENDER
+// =====================================================
+function render() {
+  S.dw=ZOOM_DW[S.zoom];
+  autoScheduleTasks();
+  autoUpdateGroups();
+  computeCPM();
+  renderList();
+  renderGantt();
+  updateStats();
+  saveState();
+}
+
+// Pendant un drag : on ne recalcule pas les dépendances
+function renderDrag() {
+  S._noAnim = true;
+  S.dw=ZOOM_DW[S.zoom];
+  autoUpdateGroups();
+  renderList();
+  renderGantt();
+  S._noAnim = false;
+}
+
+// Mise à jour sans animation (sauvegarde d'une tâche)
+function renderFast() {
+  S._noAnim = true;
+  render();
+  S._noAnim = false;
+}
+
+function rowHTML(t, i, last) {
+  const isCp=S.showCP&&S.cpIds.has(t.id);
+  const lvl=t.level||0;
+  const dot=isCp?'var(--crit)':(t.color||PALETTE[0]);
+  const tri=t.isGroup?`<span class="grp-tri">▾ </span>`:'';
+  const wd=workDays(t);
+  // Groupes : pas de champ durée éditable
+  const durCell = t.isGroup
+    ? `<div class="tpct" style="width:34px;text-align:center;color:var(--mut);font-size:9px">${wd}j</div>`
+    : `<input class="dur-inp" type="number" min="1" value="${wd}"
+         title="Durée (j)"
+         data-id="${t.id}"
+         draggable="false"
+         onmousedown="event.stopPropagation();event.preventDefault();this.focus();this.select();"
+         ondragstart="event.stopPropagation();event.preventDefault()"
+         onkeydown="durKey(event,'${t.id}')"
+         onblur="durCommit(this,'${t.id}')">`;
+  return `<div class="drag-handle" title="Déplacer">⠿</div>
+      <div class="tdot" style="background:${dot}"></div>
+      <div class="tname">${tri}${esc(t.name)}${isCp?'<span class="cbdg">CP</span>':''}</div>
+      <div class="tdt">${disp(t.startDate)}</div>
+      <div class="tdt">${disp(t.endDate)}</div>
+      <div class="tpct" style="color:${t.progress===100?'var(--green)':t.progress>0?'var(--yel)':'var(--mut)'}">${t.progress}%</div>
+      ${durCell}
+      <div class="movebtn">
+        <button class="mv" onclick="moveTask(event,'${t.id}',-1)" ${i===0?'disabled':''} title="Monter">▲</button>
+        <button class="mv" onclick="moveTask(event,'${t.id}',1)" ${i===last?'disabled':''} title="Descendre">▼</button>
+      </div>`;
+}
+
+function renderList() {
+  const el=document.getElementById('tList');
+
+  if(!S.tasks.length){
+    // Supprimer toutes les lignes existantes proprement
+    [...el.querySelectorAll(':scope > .trow')].forEach(r=>r.remove());
+    // Supprimer aussi l'éventuel message vide précédent
+    [...el.children].forEach(r=>r.remove());
+    return;
+  }
+
+  const existing = [...el.querySelectorAll(':scope > .trow')];
+  const last = S.tasks.length - 1;
+
+  // Supprimer les lignes en trop (si des tâches ont été effacées)
+  while(existing.length > S.tasks.length) existing.pop().remove();
+
+  S.tasks.forEach((t, i) => {
+    const isCp=S.showCP&&S.cpIds.has(t.id);
+    const lvl=t.level||0;
+    const grpCls=t.isGroup?(lvl===0?'grp0':'grp1'):'';
+    const lvlCls=lvl>0?`lvl${lvl}`:'';
+    const selCls=S.selId===t.id?'sel':'';
+    const cpCls=isCp?'cp':'';
+    const inner=rowHTML(t,i,last);
+
+    let row = existing[i];
+    if(!row){
+      // Nouvelle ligne
+      row = document.createElement('div');
+      row.className=`trow ${grpCls} ${lvlCls} ${cpCls} ${selCls}`.trim();
+      row.dataset.id=t.id;
+      row.draggable=true;
+      if(!S._noAnim) row.style.animationDelay=i*20+'ms';
+      row.setAttribute('onclick',`selTask('${t.id}')`);
+      row.setAttribute('ondblclick',`openModal('${t.id}')`);
+      row.title='Double-clic pour modifier';
+      row.innerHTML=inner;
+      el.appendChild(row);
+    } else {
+      // Ligne existante — mise à jour chirurgicale
+      const newClass=`trow ${grpCls} ${lvlCls} ${cpCls} ${selCls}`.trim();
+      if(row.className !== newClass) row.className=newClass;
+      if(row.dataset.id !== t.id){
+        row.dataset.id=t.id;
+        row.setAttribute('onclick',`selTask('${t.id}')`);
+        row.setAttribute('ondblclick',`openModal('${t.id}')`);
+      }
+      // Ne mettre à jour le contenu que si quelque chose a changé
+      if(row._lastInner !== inner){
+        row.innerHTML=inner;
+        row._lastInner=inner;
+      }
+    }
+  });
+
+  // DOM mis à jour — pas besoin de ré-attacher les listeners (délégation)
+}
+
+function renderGantt() {
+  const {start,days}=getBounds();
+  const dw=S.dw;
+  buildDayMap(start, days);
+  const W=S._totalW;
+  const H=Math.max(S.tasks.length*44,44);
+  const today=new Date(); today.setHours(0,0,0,0);
+
+  document.getElementById('gInn').style.width=W+'px';
+  document.getElementById('grows').style.height=H+'px';
+
+  renderTimeline(start,days,W,today,dw);
+  renderRows(start,days,W,H,today,dw);
+  renderTodayLine(start,today,dw,W,H);
+  renderDeps(start,dw);
+}
+
+function renderTimeline(start,days,W,today,dw) {
+  const zoom=S.zoom;
+
+  // ── Row 1 : Mois ────────────────────────────────────────
+  let mHTML='';
+  {
+    let cur=new Date(start);
+    const end=new Date(start.getTime()+days*DAY);
+    while(cur<end){
+      const mEnd=new Date(cur.getFullYear(),cur.getMonth()+1,1);
+      const sliceEnd=mEnd<end?mEnd:end;
+      let w=0;
+      let d2=new Date(cur);
+      while(d2<sliceEnd){ if(!S.hideWknd||!wknd(d2)) w+=dw; d2=new Date(d2.getTime()+DAY); }
+      const lbl=cur.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+      if(w>0) mHTML+=`<div class="tmc" style="width:${w}px">${lbl}</div>`;
+      cur=mEnd;
+    }
+  }
+
+  // ── Row 2 : Numéros de semaine ─────────────────────────
+  let wHTML='';
+  if(zoom==='day'||zoom==='week'){
+    // Trouver le lundi de la 1ère semaine
+    let cur=new Date(start);
+    // Reculer au lundi
+    const dow=cur.getDay()||7;
+    if(dow>1) cur=new Date(cur.getTime()-(dow-1)*DAY);
+    const end=new Date(start.getTime()+days*DAY);
+    while(cur<end){
+      const wEnd=new Date(cur.getTime()+7*DAY);
+      const sliceStart=cur<start?start:cur;
+      const sliceEnd=wEnd>end?end:wEnd;
+      let w=0;
+      let d2=new Date(sliceStart);
+      while(d2<sliceEnd){ if(!S.hideWknd||!wknd(d2)) w+=dw; d2=new Date(d2.getTime()+DAY); }
+      const wn=wkNum(cur);
+      const isCurWeek=today>=cur&&today<wEnd;
+      if(w>0) wHTML+=`<div class="twc ${isCurWeek?'twc-active':''}" style="width:${w}px">S${wn}</div>`;
+      cur=wEnd;
+    }
+  } else {
+    // En zoom mois : afficher les mois comme 2ème ligne aussi
+    let cur=new Date(start);
+    const end=new Date(start.getTime()+days*DAY);
+    while(cur<end){
+      const mEnd=new Date(cur.getFullYear(),cur.getMonth()+1,1);
+      const sliceEnd=mEnd<end?mEnd:end;
+      let w=0; let d2=new Date(cur);
+      while(d2<sliceEnd){ if(!S.hideWknd||!wknd(d2)) w+=dw; d2=new Date(d2.getTime()+DAY); }
+      const lbl=cur.toLocaleDateString('fr-FR',{month:'short'});
+      if(w>0) wHTML+=`<div class="twc" style="width:${w}px">${lbl}</div>`;
+      cur=mEnd;
+    }
+  }
+
+  // ── Row 3 : Jours / unités ────────────────────────────
+  let dHTML='';
+  if(zoom==='day'){
+    for(let i=0;i<days;i++){
+      const d=new Date(start.getTime()+i*DAY);
+      if(S.hideWknd&&wknd(d)) continue;
+      const isT=d.getTime()===today.getTime();
+      const isSat=d.getDay()===6;
+      const isSun=d.getDay()===0;
+      const isWkd=isSat||isSun;
+      const y=d.getFullYear();
+      const key=`${y}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const isFerie=!isWkd&&feriesAnnee(y).has(key);
+      const dayLbl=d.getDate();
+      const ferieNom=isFerie?[...feriesAnnee(y)].find?.(k=>k===key)||'' :'';
+      const titleTxt=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})+(isFerie?' 🎉 Jour férié':'');
+      dHTML+=`<div class="tdc ${isT?'tdh':''} ${isWkd?'twknd':''} ${isSat?'twknd-sat':''} ${isFerie?'tferie':''}" style="width:${dw}px" title="${titleTxt}">${dayLbl}</div>`;
+    }
+  } else if(zoom==='week'){
+    // Semaines : afficher les n° sem déjà dans row2, ici afficher les plages dates
+    let cur2=new Date(start);
+    const dow2=cur2.getDay()||7; if(dow2>1) cur2=new Date(cur2.getTime()-(dow2-1)*DAY);
+    const end2=new Date(start.getTime()+days*DAY);
+    while(cur2<end2){
+      const wEnd2=new Date(cur2.getTime()+7*DAY);
+      const sliceStart=cur2<start?start:cur2;
+      const sliceEnd=wEnd2>end2?end2:wEnd2;
+      let w=0; let d2=new Date(sliceStart);
+      while(d2<sliceEnd){ if(!S.hideWknd||!wknd(d2)) w+=dw; d2=new Date(d2.getTime()+DAY); }
+      const lbl=sliceStart.getDate()+'/'+String(sliceStart.getMonth()+1).padStart(2,'0');
+      if(w>0) dHTML+=`<div class="tdc" style="width:${w}px;font-size:9px">${lbl}</div>`;
+      cur2=wEnd2;
+    }
+  } else {
+    // Mois : afficher les semaines
+    let cur3=new Date(start); const dow3=cur3.getDay()||7; if(dow3>1) cur3=new Date(cur3.getTime()-(dow3-1)*DAY);
+    const end3=new Date(start.getTime()+days*DAY);
+    while(cur3<end3){
+      const wEnd3=new Date(cur3.getTime()+7*DAY);
+      const sliceStart=cur3<start?start:cur3;
+      const sliceEnd=wEnd3>end3?end3:wEnd3;
+      let w=0; let d2=new Date(sliceStart);
+      while(d2<sliceEnd){ if(!S.hideWknd||!wknd(d2)) w+=dw; d2=new Date(d2.getTime()+DAY); }
+      if(w>0) dHTML+=`<div class="tdc" style="width:${w}px;font-size:9px">S${wkNum(cur3)}</div>`;
+      cur3=wEnd3;
+    }
+  }
+
+  document.getElementById('thead').innerHTML=`
+    <div class="tmrow" style="width:${W}px">${mHTML}</div>
+    <div class="twrow" style="width:${W}px">${wHTML}</div>
+    <div class="tdrow" style="width:${W}px">${dHTML}</div>`;
+}
+
+// Calcule la largeur visuelle d'une barre (tient compte du masquage des WE)
+function barWOf(t, start, days, dw) {
+  const si=Math.round((parse(t.startDate)-start)/DAY);
+  const ei=Math.round((parse(t.endDate)-start)/DAY);
+  if(ei<0||si>=days) return 4;
+  if(!S.hideWknd) return Math.max(4,dur(t)*dw-2);
+  let w=0;
+  for(let i=Math.max(0,si);i<=Math.min(days-1,ei);i++){
+    const d=new Date(start.getTime()+i*DAY);
+    if(!wknd(d)) w+=dw;
+  }
+  return Math.max(4,w-2);
+}
+
+function renderRows(start,days,W,H,today,dw) {
+  const el=document.getElementById('grows');
+  const dmap=S._dayMap;
+
+  // Grid columns — skip weekends if hideWknd
+  let gHTML='';
+  for(let i=0;i<days;i++){
+    const d=new Date(start.getTime()+i*DAY);
+    if(S.hideWknd&&wknd(d)) continue;
+    const isT=d.getTime()===today.getTime();
+    const isWk=wknd(d);
+    const x=dmap[i];
+    const dy=d.getDay(), yr=d.getFullYear();
+    const isFerieG=dy!==0&&dy!==6&&feriesAnnee(yr).has(`${yr}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
+    gHTML+=`<div class="gcol ${isT?'gt':''} ${isWk?'gw':''} ${dy===6?'gw-sat':''} ${isFerieG?'gferie':''}" style="left:${x}px;width:${dw}px"></div>`;
+  }
+
+  // Compute visual bar width (may skip weekends inside span)
+  function barW(t) {
+    return barWOf(t, start, days, dw);
+  }
+
+  // Task bars
+  let rHTML='';
+  S.tasks.forEach((t,i)=>{
+    const x=xOf(t.startDate);
+    const w=barW(t);
+    const isCp=S.showCP&&S.cpIds.has(t.id);
+    const col=isCp?'#FF7140':(t.color||PALETTE[0]);
+    const delay=i*30;
+
+    if(t.isGroup) {
+      const lvl=t.level||0;
+      const h=lvl===0?10:7;
+      const top=lvl===0?7:12;
+      const bg=hexToRgba(col, lvl===0?0.85:0.65);
+      const capH=h;
+      rHTML+=`<div class="grow" style="width:${W}px">
+        <div class="gbar" style="left:${x}px;top:${top}px;height:${h}px;width:${w}px;background:${bg}"
+             onclick="selTask('${t.id}')" ondblclick="openModal('${t.id}')"
+             onmouseenter="showTip(event,'${t.id}')" onmouseleave="hideTip()">
+          <div class="gbar-lbl" style="color:${col}">${esc(t.name)}</div>
+        </div>
+      </div>`;
+    } else {
+      rHTML+=`<div class="grow" style="width:${W}px">
+        <div class="tbar ${isCp?'crit':''}" data-id="${t.id}"
+             style="left:${x}px;width:${w}px;background:${hexToRgba(col,.22)};border-color:${col};--bar-col:${col};cursor:grab;${S._noAnim?'animation:none':'animation-delay:'+delay+'ms'}"
+             onmouseenter="showTip(event,'${t.id}');tbarLinkShow(this)"
+             onmouseleave="hideTip();tbarLinkHide(this)"
+             onmousedown="barMoveStart(event,'${t.id}')"
+             onclick="selTask('${t.id}')"
+             ondblclick="openModal('${t.id}')">
+          <div class="tbar-inner">
+            <div class="tbar-fill" style="background:${col};width:${t.progress}%"></div>
+          </div>
+          <div class="tbar-lbl" style="position:relative;z-index:1;padding:0 8px;pointer-events:none">${esc(t.name)} <span style="opacity:.55;font-size:9px;font-weight:400">${workDays(t)}j</span>${t.progress>0?` <span style="opacity:.7;font-size:9px">${t.progress}%</span>`:''}</div>
+          <div class="tbar-handle tbar-hl" onmousedown="barResizeStart(event,'${t.id}','start')" title="Modifier le début"></div>
+          <div class="tbar-handle tbar-hr" onmousedown="barResizeStart(event,'${t.id}','end')" title="Modifier la fin"></div>
+          <div class="tbar-link" onmousedown="depLinkStart(event,'${t.id}')" title="Créer une dépendance"></div>
+        </div>
+      </div>`;
+    }
+  });
+
+  el.innerHTML=`<div style="position:absolute;inset:0;pointer-events:none;overflow:hidden">${gHTML}</div>${rHTML}`;
+}
+
+function renderTodayLine(start,today,dw,W,H) {
+  const i=Math.round((today-start)/DAY);
+  const el=document.getElementById('todayLine');
+  const lbl=document.getElementById('todayLbl');
+  if(i>=0&&i<S._dayMap.length&&!(S.hideWknd&&wknd(today))){
+    const x=S._dayMap[i];
+    el.style.display='block';
+    el.style.left=x+'px';
+    el.style.height=(H+78)+'px';
+    lbl.textContent="Auj. "+today.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+  } else el.style.display='none';
+}
+
+function renderDeps(startArg,dw) {
+  const svg=document.getElementById('depSvg');
+  const {start:bStart,days}=getBounds();
+  const W=S._totalW;
+  const H=S.tasks.length*44;
+  svg.setAttribute('width',W);
+  svg.setAttribute('height',H);
+
+  if(!S.showDeps){svg.innerHTML='';return;}
+
+  const idx={};
+  S.tasks.forEach((t,i)=>idx[t.id]=i);
+  const map={};
+  S.tasks.forEach(t=>map[t.id]=t);
+
+  // Marqueurs de flèches dans le SVG (créés une fois)
+  const mkNormal='depArrow';const mkCrit='depArrowCrit';
+  const defs=`<defs>
+    <marker id="${mkNormal}" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L6,3 z" fill="#3a4f6e"/>
+    </marker>
+    <marker id="${mkCrit}" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L6,3 z" fill="#FF6B2B"/>
+    </marker>
+  </defs>`;
+
+  let paths=defs;
+  S.tasks.forEach(t=>{
+    if(!t.deps.length)return;
+    t.deps.forEach(did=>{
+      const dep=map[did];
+      if(!dep)return;
+      const x1=xOf(dep.startDate)+barWOf(dep,bStart,days,dw);
+      const y1=idx[did]*44+22;
+      const x2=xOf(t.startDate);
+      const y2=idx[t.id]*44+22;
+      const isCp=S.showCP&&S.cpIds.has(t.id)&&S.cpIds.has(did);
+      const col=isCp?'#FF6B2B':'#3a4f6e';
+      const opa=isCp?0.85:0.55;
+      const sw=isCp?2:1.5;
+      const dash=isCp?'none':'5,3';
+      const r=4;
+
+      // Groupe d'opacité unifié : chemin seul
+      const aw=7; // largeur flèche
+      const ah=4; // demi-hauteur flèche
+      // Le trait s'arrête au bord gauche du triangle
+      const x2t=x2-1; // pointe de la flèche, 1px avant le bord de barre
+      const x2b=x2t-aw; // base de la flèche = fin du trait
+
+      let p;
+      if(x2>=x1-2){
+        if(Math.abs(y2-y1)<2){
+          p=`M${x1},${y1} H${x2b}`;
+        } else {
+          const dx=Math.max(40,Math.abs(x2-x1)*0.5);
+          p=`M${x1},${y1} C${x1+dx},${y1} ${x2b-dx},${y2} ${x2b},${y2}`;
+        }
+      } else {
+        const margin=18;
+        const xRight=x1+margin;
+        const xLeft=x2-margin;
+        const my=y1<y2?y1+36:y1-36;
+        const sy=y2>y1?1:-1;
+        p=`M${x1},${y1}`
+         +` H${xRight-r}`
+         +` Q${xRight},${y1} ${xRight},${y1+r*sy}`
+         +` V${my-r*sy}`
+         +` Q${xRight},${my} ${xRight-r},${my}`
+         +` H${xLeft+r}`
+         +` Q${xLeft},${my} ${xLeft},${my+r*sy}`
+         +` V${y2-r*sy}`
+         +` Q${xLeft},${y2} ${xLeft+r},${y2}`
+         +` H${x2b}`;
+      }
+
+      // Midpoint de la spline pour positionner le bouton × (coordonnées écran via getBoundingClientRect du SVG)
+      let mxSvg, mySvg;
+      if(x2>=x1-2 && Math.abs(y2-y1)>=2){
+        const dx2=Math.max(40,Math.abs(x2-x1)*0.5);
+        // Bezier cubique t=0.5 : 0.125*P0 + 0.375*CP1 + 0.375*CP2 + 0.125*P3
+        mxSvg=0.125*x1+0.375*(x1+dx2)+0.375*(x2b-dx2)+0.125*x2b;
+        mySvg=0.125*y1+0.375*y1+0.375*y2+0.125*y2;
+      } else {
+        mxSvg=(x1+x2b)/2; mySvg=(y1+y2)/2;
+      }
+
+      paths+=`<g opacity="${opa}" style="pointer-events:stroke" class="dep-link" data-from="${did}" data-to="${t.id}" data-mx="${Math.round(mxSvg)}" data-my="${Math.round(mySvg)}"
+        onmouseenter="depHoverStart(event,'${did}','${t.id}')"
+        onmouseleave="depHoverEnd()">
+        <path d="${p}" stroke="${col}" stroke-width="${sw}" fill="none" stroke-dasharray="${dash}" stroke-linejoin="round" stroke-linecap="butt"/>
+        <path d="${p}" stroke="transparent" stroke-width="12" fill="none" style="pointer-events:stroke" cursor="pointer"/>
+        <polygon points="${x2t},${y2} ${x2b},${y2-ah} ${x2b},${y2+ah}" fill="${col}" stroke="none"/>
+      </g>`;
+    });
+  });
+  svg.innerHTML=paths;
+}
+
+// =====================================================
+// STATS
+// =====================================================
+function updateStats() {
+  const tasks=S.tasks;
+  const leaves=tasks.filter(t=>!t.isGroup);
+  document.getElementById('sTotal').textContent=tasks.length;
+  if(!tasks.length){
+    document.getElementById('sDur').textContent='-';
+    document.getElementById('sProg').textContent='0%';
+    document.getElementById('sCP').textContent='-';
+    document.getElementById('sBudget').textContent='-';
+    document.getElementById('sRealise').textContent='-';
+    return;
+  }
+  const starts=tasks.map(t=>parse(t.startDate));
+  const ends=tasks.map(t=>parse(t.endDate));
+  const mn=new Date(Math.min(...starts));
+  const mx=new Date(Math.max(...ends));
+  document.getElementById('sDur').textContent=Math.round((mx-mn)/DAY+1)+' j';
+  document.getElementById('sProg').textContent=Math.round(leaves.reduce((a,t)=>a+t.progress,0)/(leaves.length||1))+'%';
+  document.getElementById('sCP').textContent=S.cpIds.size+' tâche(s)';
+  const totalBudget=leaves.reduce((a,t)=>a+(t.montant||0),0);
+  const totalRealise=leaves.reduce((a,t)=>a+(t.montant||0)*t.progress/100,0);
+  document.getElementById('sBudget').textContent=totalBudget>0?fmtEur(totalBudget):'-';
+  document.getElementById('sRealise').textContent=totalBudget>0?fmtEur(totalRealise):'-';
+}
+
+// =====================================================
+// MODAL
+// =====================================================
+function openModal(id=null) {
+  S.editId=id;
+  const t=id?S.tasks.find(x=>x.id===id):null;
+  document.getElementById('mTitle').textContent=id?'✏️ Modifier la tâche':'+ Nouvelle tâche';
+  document.getElementById('btnDel').style.display=id?'flex':'none';
+  document.getElementById('fName').value=t?.name||'';
+  document.getElementById('fStart').value=t?.startDate||fmt(new Date());
+  document.getElementById('fEnd').value=t?.endDate||fmt(new Date(Date.now()+7*DAY));
+  const sd=t?.startDate||fmt(new Date()), ed=t?.endDate||fmt(new Date(Date.now()+7*DAY));
+  document.getElementById('fDur').value=Math.round((parse(ed)-parse(sd))/DAY)+1;
+  document.getElementById('fProg').value=t?.progress||0;
+  document.getElementById('pctLbl').textContent=(t?.progress||0)+'%';
+  document.getElementById('fAssignee').value=t?.assignee||'';
+  document.getElementById('fPrio').value=t?.priority||'medium';
+  document.getElementById('fNotes').value=t?.notes||'';
+  document.getElementById('fMontant').value=t?.montant||'';
+  updPct(t?.progress||0);
+  syncDates('dates');
+
+  // Color picker
+  const sel=t?.color||PALETTE[0];
+  document.getElementById('colorPicker').innerHTML=PALETTE.map(c=>
+    `<div class="csw ${c===sel?'on':''}" style="background:${c}" data-hex="${c}" onclick="pickColor('${c}',this)" title="${c}"></div>`
+  ).join('');
+
+  // Dep chips — séparés groupes / tâches
+  const others=S.tasks.filter(x=>x.id!==id);
+  const groups=others.filter(x=>x.isGroup);
+  const tasks=others.filter(x=>!x.isGroup);
+  const chipHtml=(list)=>list.length
+    ? list.map(x=>`<div class="chip ${t?.deps.includes(x.id)?'on':''}" onclick="togDep(this)" data-id="${x.id}">${esc(x.name)}</div>`).join('')
+    : '<span style="color:var(--mut);font-size:10px;padding:2px 4px">—</span>';
+  document.getElementById('depChipsGroups').innerHTML=chipHtml(groups);
+  document.getElementById('depChipsTasks').innerHTML=chipHtml(tasks);
+
+  document.getElementById('ovl').classList.add('open');
+  setTimeout(()=>document.getElementById('fName').focus(),100);
+}
+
+function closeModal(){
+  document.getElementById('ovl').classList.remove('open');
+  // Restore fields hidden by openModalGroup
+  const m=document.getElementById('modal');
+  delete m.dataset.forceGroup;
+  document.getElementById('fProg').closest('.fg').style.display='';
+  document.getElementById('depChipsGroups').closest('.fg').style.display='';
+  S.editId=null;
+}
+function bgClose(e){ if(e.target===document.getElementById('ovl'))closeModal(); }
+function openModalGroup(){
+  openModal(null);
+  // Pre-set as group — checked after modal opens
+  setTimeout(()=>{
+    // Inject a hidden group flag via a temporary data attr on the modal
+    document.getElementById('modal').dataset.forceGroup='1';
+    document.getElementById('mTitle').textContent='+ Nouveau groupe';
+    document.getElementById('fName').placeholder='Ex : PHASE 1 — Conception';
+    // Hide progress & deps — not relevant for groups
+    document.getElementById('fProg').closest('.fg').style.display='none';
+    document.getElementById('depChipsGroups').closest('.fg').style.display='none';
+  },10);
+}
+function pickColor(c,el){ document.querySelectorAll('.csw').forEach(x=>x.classList.remove('on')); el.classList.add('on'); }
+function togDep(el){ el.classList.toggle('on'); }
+function updPct(v){
+  document.getElementById('pctLbl').textContent=v+'%';
+  const m=parseFloat(document.getElementById('fMontant').value)||0;
+  const av=(m*v/100);
+  document.getElementById('fMontantAv').value=av>0?av.toFixed(2):'';
+  document.getElementById('montantAvLbl').textContent=m>0?fmtEur(av):'';
+}
+let _durLock = false;
+function syncDates(changed) {
+  if (_durLock) return;
+  _durLock = true;
+  const s = document.getElementById('fStart').value;
+  const e = document.getElementById('fEnd').value;
+  const dEl = document.getElementById('fDur');
+  if (changed === 'dates' && s && e && s <= e) {
+    const tmp = {startDate:s, endDate:e};
+    dEl.value = workDays(tmp);
+  } else if (changed === 'dur' && s && dEl.value > 0) {
+    document.getElementById('fEnd').value = addWorkDays(s, parseInt(dEl.value));
+  }
+  _durLock = false;
+}
+document.getElementById('fStart').addEventListener('input', () => syncDates('dates'));
+document.getElementById('fEnd').addEventListener('input', () => syncDates('dates'));
+document.getElementById('fDur').addEventListener('input', () => syncDates('dur'));
+document.getElementById('fMontant').addEventListener('input', () => updPct(document.getElementById('fProg').value));
+
+function saveTask(){
+  const name=document.getElementById('fName').value.trim();
+  const startDate=document.getElementById('fStart').value;
+  const endDate=document.getElementById('fEnd').value;
+  if(!name){alert('Veuillez saisir un nom de tâche.');return;}
+  if(!startDate||!endDate){alert('Veuillez saisir les dates.');return;}
+  if(startDate>endDate){alert('La date de fin doit être après la date de début.');return;}
+  const isGroup = !!document.getElementById('modal').dataset.forceGroup || !!(S.editId && S.tasks.find(t=>t.id===S.editId)?.isGroup);
+  const selSwatch = document.querySelector('.csw.on');
+  const color = selSwatch ? (selSwatch.dataset.hex || selSwatch.style.background || PALETTE[0]) : PALETTE[0];
+  const deps=isGroup?[]:[...document.querySelectorAll('#depChipsGroups .chip.on, #depChipsTasks .chip.on')].map(x=>x.dataset.id);
+  const data={name,startDate,endDate,progress:isGroup?0:+document.getElementById('fProg').value,
+    assignee:document.getElementById('fAssignee').value.trim(),
+    priority:document.getElementById('fPrio').value,color,deps,
+    notes:document.getElementById('fNotes').value.trim(),
+    montant:parseFloat(document.getElementById('fMontant').value)||0,
+    isGroup,level:isGroup?0:0,parentId:null};
+  if(S.editId){
+    const i=S.tasks.findIndex(t=>t.id===S.editId);
+    S.tasks[i]={...S.tasks[i],...data};
+    closeModal(); renderFast();
+  } else {
+    S.tasks.push({id:'t'+Date.now(),...data});
+    closeModal(); render();
+  }
+}
+
+async function delTask(e){
+  const ok = await popConfirm('Supprimer cette tâche ?', e);
+  if(!ok) return;
+  S.tasks=S.tasks.filter(t=>t.id!==S.editId);
+  S.tasks.forEach(t=>t.deps=t.deps.filter(d=>d!==S.editId));
+  closeModal(); render();
+}
+
+// =====================================================
+// IMPORT / EXPORT
+// =====================================================
+function exportExcel(){
+  if(!S.tasks.length){alert('Aucune tâche à exporter.');return;}
+
+  // ── Utilitaires ─────────────────────────────────────────
+  function toARGB(hex){
+    const h=hex.replace('#','');
+    const f=h.length===3?h.split('').map(c=>c+c).join(''):h;
+    return('FF'+f).toUpperCase();
+  }
+  function lightenARGB(hex,pct){
+    const h=hex.replace('#','');const f=h.length===3?h.split('').map(c=>c+c).join(''):h;
+    const r=parseInt(f.slice(0,2),16),g=parseInt(f.slice(2,4),16),b=parseInt(f.slice(4,6),16),k=pct/100;
+    return('FF'+[r,g,b].map(v=>Math.min(255,Math.round(v+(255-v)*k)).toString(16).padStart(2,'0')).join('')).toUpperCase();
+  }
+  const xe=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  function colRef(c){let r='';c--;do{r=String.fromCharCode(65+c%26)+r;c=Math.floor(c/26)-1;}while(c>=0);return r;}
+  function cellRef(r,c){return colRef(c)+r;}
+  function dateSerial(d){return Math.round((d-new Date(1899,11,30))/86400000);}
+
+  // ── Styles (définis avant d'être utilisés) ───────────────
+  const taskColors=[...new Set(S.tasks.map(t=>t.color||'#4F8EF7'))];
+  const nFills=12+taskColors.length*2;
+  const nXfs=11+taskColors.length*2;
+
+  const extraFills=taskColors.map(c=>
+    `<fill><patternFill patternType="solid"><fgColor rgb="${toARGB(c)}"/></patternFill></fill>`+
+    `<fill><patternFill patternType="solid"><fgColor rgb="${lightenARGB(c,50)}"/></patternFill></fill>`
+  ).join('');
+
+  const extraXfs=taskColors.map((c,ci)=>
+    `<xf numFmtId="0" fontId="1" fillId="${12+ci*2}" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>`+
+    `<xf numFmtId="0" fontId="3" fillId="${12+ci*2+1}" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>`
+  ).join('');
+
+  const stylesXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<numFmts count="3">
+<numFmt numFmtId="164" formatCode="dd/mm/yyyy"/>
+<numFmt numFmtId="165" formatCode="0%"/>
+<numFmt numFmtId="166" formatCode="#,##0.00\ &quot;\u20AC&quot;"/>
+</numFmts>
+<fonts count="8">
+<font><sz val="11"/><name val="Calibri"/></font>
+<font><sz val="9"/><b/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+<font><sz val="9"/><b/><color rgb="FF1A3A6E"/><name val="Calibri"/></font>
+<font><sz val="9"/><color rgb="FF1A1F2E"/><name val="Calibri"/></font>
+<font><sz val="14"/><b/><color rgb="FF1A3A6E"/><name val="Calibri"/></font>
+<font><sz val="8"/><color rgb="FF999999"/><name val="Calibri"/></font>
+<font><sz val="8"/><color rgb="FFCC2222"/><name val="Calibri"/></font>
+<font><sz val="8"/><b/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>
+</fonts>
+<fills count="${nFills}">
+<fill><patternFill patternType="none"/></fill>
+<fill><patternFill patternType="gray125"/></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF1A3A6E"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFCCDDF2"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFE3EEF9"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFFFFFFF"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFEEEEEE"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFFFF0F0"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFEDE8FF"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FF7B63FF"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFE6F1FB"/></patternFill></fill>
+<fill><patternFill patternType="solid"><fgColor rgb="FFD6E4F8"/></patternFill></fill>
+${extraFills}
+</fills>
+<borders count="2">
+<border><left/><right/><top/><bottom/><diagonal/></border>
+<border><left style="thin"><color rgb="FFC2CBDE"/></left><right style="thin"><color rgb="FFC2CBDE"/></right><top style="thin"><color rgb="FFC2CBDE"/></top><bottom style="thin"><color rgb="FFC2CBDE"/></bottom><diagonal/></border>
+</borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="${nXfs}">
+<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>
+<xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment vertical="center"/></xf>
+<xf numFmtId="0" fontId="2" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment vertical="center"/></xf>
+<xf numFmtId="0" fontId="3" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment vertical="center"/></xf>
+<xf numFmtId="164" fontId="3" fillId="5" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+<xf numFmtId="165" fontId="3" fillId="5" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+<xf numFmtId="166" fontId="3" fillId="5" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="right" vertical="center"/></xf>
+<xf numFmtId="0" fontId="5" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+<xf numFmtId="0" fontId="6" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+<xf numFmtId="0" fontId="7" fillId="9" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center" vertical="center"/></xf>
+${extraXfs}
+</cellXfs>
+</styleSheet>`;
+
+  const S_HDR=1,S_GRP0=2,S_GRP1=3,S_NORM=4,S_DATE=5,S_PCT=6,S_EUR=7,S_WE=8,S_FER=9,S_TODAY=10;
+  function barSty(col,light){const ci=taskColors.indexOf(col||'');return ci>=0?11+ci*2+(light?1:0):S_NORM;}
+
+  // ── Shared strings ───────────────────────────────────────
+  const strs=[];const strIdx={};
+  function si(s){s=String(s==null?'':s);if(strIdx[s]===undefined){strIdx[s]=strs.length;strs.push(s);}return strIdx[s];}
+
+  // ── Cell XML ─────────────────────────────────────────────
+  function C(r,c,v,sty){
+    const ref=cellRef(r,c);const sa=sty!=null?` s="${sty}"`:'';
+    if(v==null||v==='')return sty!=null?`<c r="${ref}"${sa}/>`:'' ;
+    if(v instanceof Date)return`<c r="${ref}" t="n"${sa}><v>${dateSerial(v)}</v></c>`;
+    if(typeof v==='number')return`<c r="${ref}"${sa}><v>${v}</v></c>`;
+    return`<c r="${ref}" t="s"${sa}><v>${si(v)}</v></c>`;
+  }
+
+  // ── ZIP builder ──────────────────────────────────────────
+  const enc=new TextEncoder();
+  const parts=[];const cdir=[];let zOff=0;
+  const crcTab=(()=>{const t=new Uint32Array(256);for(let i=0;i<256;i++){let c=i;for(let j=0;j<8;j++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[i]=c;}return t;})();
+  function crc32(buf){let c=0xFFFFFFFF;for(const b of buf)c=crcTab[(c^b)&0xFF]^(c>>>8);return(c^0xFFFFFFFF)>>>0;}
+  function dw(v){const b=new Uint8Array(4);b[0]=v&255;b[1]=(v>>8)&255;b[2]=(v>>16)&255;b[3]=(v>>24)&255;return b;}
+  function w(v){return new Uint8Array([v&255,(v>>8)&255]);}
+  function concat(...arrs){const tot=arrs.reduce((a,b)=>a+b.length,0),r=new Uint8Array(tot);let o=0;for(const a of arrs){r.set(a,o);o+=a.length;}return r;}
+
+  function addFile(name,text){
+    const nb=enc.encode(name),data=enc.encode(text),crc=crc32(data),sz=data.length;
+    const lh=concat(
+      new Uint8Array([0x50,0x4B,0x03,0x04]),w(20),w(0),w(0),w(0),w(0),
+      dw(crc),dw(sz),dw(sz),w(nb.length),w(0),nb
+    );
+    parts.push(lh,data);
+    cdir.push(concat(
+      new Uint8Array([0x50,0x4B,0x01,0x02]),w(20),w(20),w(0),w(0),w(0),w(0),
+      dw(crc),dw(sz),dw(sz),w(nb.length),w(0),w(0),w(0),w(0),dw(0),dw(zOff),nb
+    ));
+    zOff+=lh.length+sz;
+  }
+  function finishZip(){
+    const cd=concat(...cdir),n=cdir.length;
+    const eocd=concat(
+      new Uint8Array([0x50,0x4B,0x05,0x06]),w(0),w(0),w(n),w(n),
+      dw(cd.length),dw(zOff),w(0)
+    );
+    return new Blob([...parts,cd,eocd],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  }
+
+  // ── Helpers tâches ───────────────────────────────────────
+  const mapT={};S.tasks.forEach(t=>mapT[t.id]=t);
+  function grpName(t){
+    if(t.parentId&&mapT[t.parentId])return mapT[t.parentId].name;
+    const idx=S.tasks.indexOf(t),lvl=t.level||0;
+    for(let j=idx-1;j>=0;j--){const u=S.tasks[j];if(u.isGroup&&(u.level||0)<lvl)return u.name;}
+    return'';
+  }
+
+  const projName=document.getElementById('projName').value;
+  const todayD=new Date();todayD.setHours(0,0,0,0);
+  const fmt0=d=>{const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');return`${y}-${m}-${dd}`;};
+
+  // ── SHEET 1 : Gantt ──────────────────────────────────────
+  const allS=S.tasks.map(t=>parse(t.startDate).getTime());
+  const allE=S.tasks.map(t=>parse(t.endDate).getTime());
+  const rS=new Date(Math.min(...allS));const rE=new Date(Math.max(...allE));
+  const d0=rS.getDay()||7;if(d0>1)rS.setTime(rS.getTime()-(d0-1)*DAY);
+  const d1=rE.getDay();if(d1!==0)rE.setTime(rE.getTime()+(7-d1)*DAY);
+  const nDays=Math.round((rE-rS)/DAY)+1;
+  const FIXED=5;
+
+  {
+    const rows=[];
+    // Row 1: title
+    rows.push(`<row r="1" ht="20" customHeight="1">${C(1,1,projName,1)}</row>`);
+    // Row 2: day headers
+    let r2='';
+    ['Tâche','Début','Fin','Dur.','%'].forEach((h,ci)=>{r2+=C(2,ci+1,h,S_HDR);});
+    for(let di=0;di<nDays;di++){
+      const d=new Date(rS.getTime()+di*DAY);
+      const isWE=d.getDay()===0||d.getDay()===6;
+      const yr=d.getFullYear();
+      const key=`${yr}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const isFer=!isWE&&feriesAnnee(yr).has(key);
+      const isT=d.getTime()===todayD.getTime();
+      r2+=C(2,FIXED+di+1,d.getDate(),isT?S_TODAY:isFer?S_FER:isWE?S_WE:S_HDR);
+    }
+    rows.push(`<row r="2" ht="14" customHeight="1">${r2}</row>`);
+    // Task rows
+    S.tasks.forEach((t,ri)=>{
+      const rn=3+ri,isGrp=t.isGroup,lvl=t.level||0;
+      const sGrp=lvl===0?S_GRP0:S_GRP1;
+      let rc=C(rn,1,(isGrp?'▶ ':' '.repeat(lvl*2))+t.name,isGrp?sGrp:S_NORM);
+      if(!isGrp){
+        rc+=C(rn,2,parse(t.startDate),S_DATE)+C(rn,3,parse(t.endDate),S_DATE)+C(rn,4,workDays(t),S_NORM)+C(rn,5,t.progress/100,S_PCT);
+      } else {
+        rc+=C(rn,2,null,sGrp)+C(rn,3,null,sGrp)+C(rn,4,null,sGrp)+C(rn,5,null,sGrp);
+      }
+      const tS2=parse(t.startDate).getTime(),tE2=parse(t.endDate).getTime();
+      const progE=!isGrp&&t.progress>0?tS2+Math.round((tE2-tS2)*t.progress/100):null;
+      for(let di=0;di<nDays;di++){
+        const d=new Date(rS.getTime()+di*DAY);const dt=d.getTime();
+        const isWE=d.getDay()===0||d.getDay()===6;
+        const yr=d.getFullYear();
+        const key=`${yr}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const isFer=!isWE&&feriesAnnee(yr).has(key);
+        const isT2=dt===todayD.getTime();
+        let sty;
+        if(dt>=tS2&&dt<=tE2){sty=isGrp?barSty(t.color,false):(progE&&dt<=progE?barSty(t.color,false):barSty(t.color,true));}
+        else{sty=isT2?S_TODAY:isFer?S_FER:isWE?S_WE:S_NORM;}
+        rc+=C(rn,FIXED+di+1,null,sty);
+      }
+      rows.push(`<row r="${rn}" ht="${isGrp?16:13}" customHeight="1">${rc}</row>`);
+    });
+    const colW=[30,11,11,7,6,...Array.from({length:nDays},(_,di)=>{const d=new Date(rS.getTime()+di*DAY);return(d.getDay()===0||d.getDay()===6)?1.2:2.4;})];
+    const colsX='<cols>'+colW.map((w2,i)=>`<col min="${i+1}" max="${i+1}" width="${w2}" customWidth="1"/>`).join('')+'</cols>';
+    const merge=`<mergeCells count="1"><mergeCell ref="A1:${colRef(FIXED+nDays)}1"/></mergeCells>`;
+    const frz=`<sheetViews><sheetView workbookViewId="0"><pane xSplit="${FIXED}" ySplit="2" topLeftCell="${colRef(FIXED+1)}3" activePane="bottomRight" state="frozen"/></sheetView></sheetViews>`;
+    addFile('xl/worksheets/sheet1.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">${frz}${colsX}<sheetData>${rows.join('')}</sheetData>${merge}</worksheet>`);
+  }
+
+  // ── SHEET 2 : Données ────────────────────────────────────
+  {
+    const rows=[];
+    const hdrs=['Groupe','Niv.','Tâche','Responsable','Priorité','Début','Fin','Durée (j)','Avancement','Montant','Réalisé','Reste','Dépendances','Notes'];
+    rows.push(`<row r="1" ht="18" customHeight="1">${hdrs.map((h,ci)=>C(1,ci+1,h,S_HDR)).join('')}</row>`);
+    S.tasks.forEach((t,ri)=>{
+      const rn=2+ri,isGrp=t.isGroup,lvl=t.level||0;
+      const sty=isGrp?(lvl===0?S_GRP0:S_GRP1):S_NORM;
+      const m=t.montant||0,av=m*t.progress/100;
+      const deps=(t.deps||[]).map(d=>mapT[d]?mapT[d].name:d).join(', ');
+      rows.push(`<row r="${rn}" ht="${isGrp?16:13}" customHeight="1">`+
+        C(rn,1,isGrp?t.name:grpName(t),sty)+C(rn,2,lvl,sty)+C(rn,3,isGrp?'':t.name,sty)+
+        C(rn,4,t.assignee||'',sty)+C(rn,5,t.priority==='high'?'Haute':t.priority==='low'?'Basse':'Normale',sty)+
+        (isGrp?C(rn,6,null,sty)+C(rn,7,null,sty):C(rn,6,parse(t.startDate),S_DATE)+C(rn,7,parse(t.endDate),S_DATE))+
+        (isGrp?C(rn,8,null,sty):C(rn,8,workDays(t),sty))+
+        (isGrp?C(rn,9,null,sty):C(rn,9,t.progress/100,S_PCT))+
+        (m>0?C(rn,10,m,S_EUR)+C(rn,11,Math.round(av*100)/100,S_EUR)+C(rn,12,Math.round((m-av)*100)/100,S_EUR):C(rn,10,null,sty)+C(rn,11,null,sty)+C(rn,12,null,sty))+
+        C(rn,13,deps,sty)+C(rn,14,t.notes||'',sty)+'</row>');
+    });
+    const cw=[28,6,32,18,10,12,12,10,10,14,14,14,30,30];
+    addFile('xl/worksheets/sheet2.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols>${cw.map((w2,i)=>`<col min="${i+1}" max="${i+1}" width="${w2}" customWidth="1"/>`).join('')}</cols><sheetData>${rows.join('')}</sheetData></worksheet>`);
+  }
+
+  // ── SHEET 3 : Facturation ────────────────────────────────
+  {
+    const rows=[];
+    const hdrs=['Groupe','Tâche','Début','Fin','Avancement','Montant','Réalisé','Reste'];
+    rows.push(`<row r="1" ht="18" customHeight="1">${hdrs.map((h,ci)=>C(1,ci+1,h,S_HDR)).join('')}</row>`);
+    let rn=2;
+    const leaves2=S.tasks.filter(t=>!t.isGroup);
+    const totB=leaves2.reduce((a,t)=>a+(t.montant||0),0);
+    const totR=leaves2.reduce((a,t)=>a+(t.montant||0)*t.progress/100,0);
+    S.tasks.forEach(t=>{
+      if(t.isGroup){
+        const ch=S.tasks.filter(c=>!c.isGroup&&(c.parentId===t.id||grpName(c)===t.name));
+        const gB=ch.reduce((a,c)=>a+(c.montant||0),0),gR=ch.reduce((a,c)=>a+(c.montant||0)*c.progress/100,0);
+        rows.push(`<row r="${rn}" ht="16" customHeight="1">`+C(rn,1,t.name,S_GRP0)+C(rn,2,null,S_GRP0)+C(rn,3,null,S_GRP0)+C(rn,4,null,S_GRP0)+C(rn,5,null,S_GRP0)+(gB>0?C(rn,6,gB,S_EUR)+C(rn,7,Math.round(gR*100)/100,S_EUR)+C(rn,8,Math.round((gB-gR)*100)/100,S_EUR):C(rn,6,null,S_GRP0)+C(rn,7,null,S_GRP0)+C(rn,8,null,S_GRP0))+'</row>');
+      } else {
+        const m=t.montant||0,av=m*t.progress/100;
+        rows.push(`<row r="${rn}" ht="13" customHeight="1">`+C(rn,1,grpName(t),S_NORM)+C(rn,2,t.name,S_NORM)+C(rn,3,parse(t.startDate),S_DATE)+C(rn,4,parse(t.endDate),S_DATE)+C(rn,5,t.progress/100,S_PCT)+(m>0?C(rn,6,m,S_EUR)+C(rn,7,Math.round(av*100)/100,S_EUR)+C(rn,8,Math.round((m-av)*100)/100,S_EUR):C(rn,6,null,S_NORM)+C(rn,7,null,S_NORM)+C(rn,8,null,S_NORM))+'</row>');
+      }
+      rn++;
+    });
+    rn++;
+    rows.push(`<row r="${rn}" ht="18" customHeight="1">`+C(rn,1,'TOTAL',S_HDR)+[2,3,4,5].map(ci=>C(rn,ci,null,S_HDR)).join('')+(totB>0?C(rn,6,totB,S_EUR)+C(rn,7,Math.round(totR*100)/100,S_EUR)+C(rn,8,Math.round((totB-totR)*100)/100,S_EUR):[6,7,8].map(ci=>C(rn,ci,null,S_HDR)).join(''))+'</row>');
+    const cw=[28,32,12,12,12,14,14,14];
+    addFile('xl/worksheets/sheet3.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols>${cw.map((w2,i)=>`<col min="${i+1}" max="${i+1}" width="${w2}" customWidth="1"/>`).join('')}</cols><sheetData>${rows.join('')}</sheetData></worksheet>`);
+  }
+
+  // ── Fichiers structurels ─────────────────────────────────
+  addFile('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/></Types>`);
+  addFile('_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`);
+  addFile('xl/workbook.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Gantt" sheetId="1" r:id="rId1"/><sheet name="Donnees" sheetId="2" r:id="rId2"/><sheet name="Facturation" sheetId="3" r:id="rId3"/></sheets></workbook>`);
+  addFile('xl/_rels/workbook.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet3.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/></Relationships>`);
+  addFile('xl/styles.xml',stylesXml);
+  addFile('xl/sharedStrings.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${strs.length}" uniqueCount="${strs.length}">${strs.map(s=>`<si><t xml:space="preserve">${xe(s)}</t></si>`).join('')}</sst>`);
+
+  const blob=finishZip();
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`GanttFlow_${projName.replace(/[^a-zA-Z0-9]/g,'_')}_${fmt0(todayD)}.xlsx`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+
+// =====================================================
+// MS PROJECT IMPORT / EXPORT (MSPDI XML)
+// =====================================================
+function openMSProject(){ document.getElementById('ovlMSP').classList.add('open'); document.getElementById('mspErr').textContent=''; }
+function closeMSProject(){ document.getElementById('ovlMSP').classList.remove('open'); }
+
+function importMSProject(inp){
+  const f=inp.files[0]; if(!f)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const xml=new DOMParser().parseFromString(ev.target.result,'text/xml');
+      const ns='http://schemas.microsoft.com/project';
+
+      // Récupérer les tâches (Tasks/Task)
+      const tasks=[...xml.getElementsByTagNameNS(ns,'Task'),...xml.getElementsByTagName('Task')];
+      const calendars=xml.getElementsByTagNameNS(ns,'Calendar')||xml.getElementsByTagName('Calendar');
+
+      // Map UID → tâche
+      const uidMap={};
+      const result=[];
+      let idCounter=0;
+
+      tasks.forEach(task=>{
+        const uid=getXmlVal(task,'UID');
+        if(uid==='0') return; // tâche racine MS Project
+
+        const name=getXmlVal(task,'Name')||'Sans nom';
+        const outlineLevel=parseInt(getXmlVal(task,'OutlineLevel')||'1');
+        const isSummary=getXmlVal(task,'Summary')==='1';
+        const start=msDateToFmt(getXmlVal(task,'Start'));
+        const finish=msDateToFmt(getXmlVal(task,'Finish'));
+        const pct=parseInt(getXmlVal(task,'PercentComplete')||'0');
+        const cost=parseFloat(getXmlVal(task,'Cost')||'0');
+        const notes=getXmlVal(task,'Notes')||'';
+        const id='msp_'+Date.now()+'_'+(idCounter++);
+
+        // Priorité
+        const prio=parseInt(getXmlVal(task,'Priority')||'500');
+        const priority=prio>=700?'high':prio<=300?'low':'medium';
+
+        uidMap[uid]={id,name,start,finish,pct,cost,notes,priority,isSummary,outlineLevel,uid,deps:[]};
+      });
+
+      // Résoudre les dépendances (PredecessorLink)
+      tasks.forEach(task=>{
+        const uid=getXmlVal(task,'UID');
+        if(!uidMap[uid]) return;
+        const links=[...task.getElementsByTagNameNS(ns,'PredecessorLink'),...task.getElementsByTagName('PredecessorLink')];
+        links.forEach(link=>{
+          const predUid=getXmlVal(link,'PredecessorUID');
+          const type=getXmlVal(link,'Type')||'1'; // 1=FS
+          if(uidMap[predUid]&&type==='1'){
+            uidMap[uid].deps.push(uidMap[predUid].id);
+          }
+        });
+      });
+
+      // Construire la hiérarchie et assigner parentId
+      const palette=PALETTE;
+      let colorIdx=0;
+      const outlineStack=[];
+      const ordered=Object.values(uidMap);
+
+      ordered.forEach((t,i)=>{
+        const lvl=(t.outlineLevel||1)-1;
+        // Trouver le parent dans la pile
+        while(outlineStack.length>0&&outlineStack[outlineStack.length-1].lvl>=lvl) outlineStack.pop();
+        const parent=outlineStack.length>0?outlineStack[outlineStack.length-1].id:null;
+
+        const color=palette[colorIdx%palette.length];
+        if(t.isSummary) colorIdx++;
+
+        result.push({
+          id:t.id,
+          name:t.name,
+          startDate:t.start||fmt(new Date()),
+          endDate:t.finish||fmt(new Date(Date.now()+7*DAY)),
+          progress:t.pct,
+          deps:t.deps,
+          assignee:'',
+          priority:t.priority,
+          color,
+          notes:t.notes,
+          montant:t.cost>0?Math.round(t.cost*100)/100:0,
+          isGroup:t.isSummary,
+          level:lvl,
+          parentId:parent
+        });
+
+        if(t.isSummary) outlineStack.push({lvl,id:t.id});
+      });
+
+      if(!result.length) throw new Error('Aucune tâche trouvée dans ce fichier XML');
+
+      S.tasks=result;
+      const projName=getXmlVal(xml,'Name')||f.name.replace('.xml','');
+      document.getElementById('projName').value=projName;
+      inp.value='';
+      closeMSProject();
+      render();
+      document.getElementById('mspErr').textContent='';
+    } catch(err){
+      document.getElementById('mspErr').textContent='Erreur import : '+err.message;
+      console.error(err);
+    }
+  };
+  reader.readAsText(f,'UTF-8');
+}
+
+function getXmlVal(node,tag){
+  const el=node.getElementsByTagNameNS('http://schemas.microsoft.com/project',tag)[0]
+           ||node.getElementsByTagName(tag)[0];
+  return el?el.textContent.trim():'';
+}
+
+function msDateToFmt(msDate){
+  if(!msDate) return fmt(new Date());
+  // Format MS Project : 2024-06-03T08:00:00
+  const m=msDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return`${m[1]}-${m[2]}-${m[3]}`;
+  return fmt(new Date());
+}
+
+function exportMSProject(){
+  const proj=document.getElementById('projName').value;
+  const today=fmt(new Date());
+  const map={};S.tasks.forEach(t=>map[t.id]=t);
+
+  // Numérotation UID (MS Project commence à 1, 0 = projet)
+  const uidMap={};
+  S.tasks.forEach((t,i)=>uidMap[t.id]=i+1);
+
+  let taskXml='';
+  S.tasks.forEach((t,i)=>{
+    const uid=uidMap[t.id];
+    const lvl=(t.level||0)+1;
+    const isSummary=t.isGroup?'1':'0';
+    const pct=t.progress;
+    const dur=t.isGroup?0:workDays(t);
+    const cost=t.montant||0;
+    const depsXml=(t.deps||[]).filter(d=>uidMap[d]).map(d=>`
+      <PredecessorLink>
+        <PredecessorUID>${uidMap[d]}</PredecessorUID>
+        <Type>1</Type>
+      </PredecessorLink>`).join('');
+
+    taskXml+=`
+    <Task>
+      <UID>${uid}</UID>
+      <ID>${i+1}</ID>
+      <Name>${escXml(t.name)}</Name>
+      <Type>0</Type>
+      <IsNull>0</IsNull>
+      <CreateDate>${today}T08:00:00</CreateDate>
+      <WBS>${lvl}</WBS>
+      <OutlineLevel>${lvl}</OutlineLevel>
+      <OutlineNumber>${lvl}</OutlineNumber>
+      <Priority>${t.priority==='high'?700:t.priority==='low'?300:500}</Priority>
+      <Start>${t.startDate}T08:00:00</Start>
+      <Finish>${t.endDate}T17:00:00</Finish>
+      <Duration>PT${dur*8}H0M0S</Duration>
+      <DurationFormat>7</DurationFormat>
+      <Work>PT${dur*8}H0M0S</Work>
+      <Summary>${isSummary}</Summary>
+      <Milestone>0</Milestone>
+      <PercentComplete>${pct}</PercentComplete>
+      <PercentWorkComplete>${pct}</PercentWorkComplete>
+      <Cost>${cost.toFixed(2)}</Cost>
+      <Notes>${escXml(t.notes||'')}</Notes>
+      ${t.assignee?`<Contact>${escXml(t.assignee)}</Contact>`:''}
+      ${depsXml}
+    </Task>`;
+  });
+
+  const xml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Project xmlns="http://schemas.microsoft.com/project"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>${escXml(proj)}</Name>
+  <Title>${escXml(proj)}</Title>
+  <SaveVersion>14</SaveVersion>
+  <CurrencyCode>EUR</CurrencyCode>
+  <CurrencySymbol>€</CurrencySymbol>
+  <CurrencyDigits>2</CurrencyDigits>
+  <CreationDate>${today}T08:00:00</CreationDate>
+  <LastSaved>${today}T${new Date().toTimeString().slice(0,8)}</LastSaved>
+  <DefaultStartTime>08:00:00</DefaultStartTime>
+  <DefaultFinishTime>17:00:00</DefaultFinishTime>
+  <HoursPerDay>8</HoursPerDay>
+  <HoursPerWeek>40</HoursPerWeek>
+  <DaysPerMonth>20</DaysPerMonth>
+  <DefaultTaskType>0</DefaultTaskType>
+  <WeekStartDay>1</WeekStartDay>
+  <FYStartDate>1</FYStartDate>
+  <Tasks>
+    <Task>
+      <UID>0</UID><ID>0</ID><Name>${escXml(proj)}</Name>
+      <Type>0</Type><IsNull>0</IsNull><WBS>0</WBS>
+      <OutlineLevel>0</OutlineLevel><Summary>1</Summary>
+      <Start>${S.tasks.length?S.tasks[0].startDate:today}T08:00:00</Start>
+      <Finish>${S.tasks.length?S.tasks[S.tasks.length-1].endDate:today}T17:00:00</Finish>
+    </Task>
+    ${taskXml}
+  </Tasks>
+</Project>`;
+
+  const blob=new Blob([xml],{type:'application/xml;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`${proj.replace(/[^a-zA-Z0-9]/g,'_')}_MSProject.xml`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function escXml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+}
+
+// =====================================================
+// INTERACTIONS
+// =====================================================
+function setZoom(z){
+  S.zoom=z;
+  document.querySelectorAll('.zbtn').forEach(b=>b.classList.toggle('on',b.dataset.z===z));
+  render();
+}
+function toggleCP(){
+  S.showCP=!S.showCP;
+  document.getElementById('btnCP').classList.toggle('on',S.showCP);
+  render();
+}
+function toggleDeps(){
+  S.showDeps=!S.showDeps;
+  document.getElementById('btnDeps').classList.toggle('on',S.showDeps);
+  renderDeps(getBounds().start,S.dw);
+}
+function toggleWknd(){
+  S.hideWknd=!S.hideWknd;
+  document.getElementById('btnWknd').classList.toggle('on',!S.hideWknd);
+  render();
+}
+function toggleTheme(){
+  const isLight=document.documentElement.getAttribute('data-theme')==='light';
+  const next=isLight?'dark':'light';
+  applyTheme(next);
+  localStorage.setItem('ganttflow_theme',next);
+}
+function applyTheme(t){
+  if(t==='light'){
+    document.documentElement.setAttribute('data-theme','light');
+    document.getElementById('btnTheme').textContent='☀️';
+    document.getElementById('btnTheme').title='Passer en thème sombre';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    document.getElementById('btnTheme').textContent='🌙';
+    document.getElementById('btnTheme').title='Passer en thème clair';
+  }
+}
+// =====================================================
+// DRAG & DROP
+// =====================================================
+// =====================================================
+// DRAG & DROP LISTE (délégation — une seule fois)
+// =====================================================
+(function initDragDrop(){
+  const list = document.getElementById('tList');
+  let dragId = null;
+
+  list.addEventListener('dragstart', e => {
+    const row = e.target.closest('.trow');
+    if(!row) return;
+    dragId = row.dataset.id;
+    row.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', dragId);
+  });
+
+  list.addEventListener('dragend', e => {
+    const row = e.target.closest('.trow');
+    if(row) row.classList.remove('dragging');
+    dragId = null;
+    clearDropIndicators();
+  });
+
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const row = e.target.closest('.trow');
+    if(!row || row.dataset.id === dragId) return;
+    clearDropIndicators();
+    const rect = row.getBoundingClientRect();
+    if(e.clientY < rect.top + rect.height / 2) row.classList.add('drag-over-top');
+    else row.classList.add('drag-over-bot');
+  });
+
+  list.addEventListener('dragleave', e => {
+    const row = e.target.closest('.trow');
+    if(row && !row.contains(e.relatedTarget))
+      row.classList.remove('drag-over-top','drag-over-bot');
+  });
+
+  list.addEventListener('drop', e => {
+    e.preventDefault();
+    const row = e.target.closest('.trow');
+    if(!dragId || !row || row.dataset.id === dragId) return;
+    const rect = row.getBoundingClientRect();
+    const dropAfter = e.clientY >= rect.top + rect.height / 2;
+    const fromIdx = S.tasks.findIndex(t => t.id === dragId);
+    let toIdx = S.tasks.findIndex(t => t.id === row.dataset.id);
+    if(fromIdx === -1 || toIdx === -1) return;
+    const [moved] = S.tasks.splice(fromIdx, 1);
+    toIdx = S.tasks.findIndex(t => t.id === row.dataset.id);
+    S.tasks.splice(dropAfter ? toIdx + 1 : toIdx, 0, moved);
+    clearDropIndicators();
+    S.selId = dragId;
+    renderFast();
+  });
+})();
+
+function clearDropIndicators() {
+  document.querySelectorAll('#tList .trow').forEach(r => r.classList.remove('drag-over-top','drag-over-bot'));
+}
+
+// =====================================================
+// DEPENDENCY LINK DRAG
+// =====================================================
+let _linkTimer=null;
+function tbarLinkShow(bar){
+  clearTimeout(_linkTimer);
+  _linkTimer=setTimeout(()=>{
+    bar.querySelector('.tbar-link')?.classList.add('show');
+  },1500);
+}
+function tbarLinkHide(bar){
+  clearTimeout(_linkTimer);
+  bar.querySelector('.tbar-link')?.classList.remove('show');
+}
+
+// =====================================================
+// DEPENDENCY HOVER DELETE
+// =====================================================
+let _depHoverTimer=null;
+let _depPending={from:null,to:null};
+
+function depHoverStart(e,fromId,toId){
+  depHoverEnd();
+  _depPending={from:fromId,to:toId};
+  const g=e.currentTarget;
+  const svgRect=document.getElementById('depSvg').getBoundingClientRect();
+  const mx=svgRect.left+parseFloat(g.dataset.mx||0);
+  const my=svgRect.top+parseFloat(g.dataset.my||0);
+  _depHoverTimer=setTimeout(()=>{
+    const btn=document.getElementById('depDelBtn');
+    btn.style.display='flex';
+    btn.style.left=(mx-10)+'px';
+    btn.style.top=(my-10)+'px';
+  },1500);
+}
+
+function depHoverEnd(){
+  clearTimeout(_depHoverTimer);
+  _depHoverTimer=null;
+  // Masquer seulement si la souris n'est pas sur le bouton
+  setTimeout(()=>{
+    const btn=document.getElementById('depDelBtn');
+    if(!btn.matches(':hover')) btn.style.display='none';
+  },80);
+}
+
+function confirmDelDep(){
+  const {from,to}=_depPending;
+  if(!from||!to) return;
+  const t=S.tasks.find(x=>x.id===to);
+  if(!t) return;
+  t.deps=t.deps.filter(d=>d!==from);
+  document.getElementById('depDelBtn').style.display='none';
+  _depPending={from:null,to:null};
+  renderFast();
+}
+
+// Masquer le bouton quand la souris quitte aussi le bouton lui-même
+document.getElementById('depDelBtn').addEventListener('mouseleave',()=>{
+  document.getElementById('depDelBtn').style.display='none';
+});
+
+function depLinkStart(e, fromId) {
+  e.stopPropagation();
+  e.preventDefault();
+  hideTip();
+
+  const svg = document.getElementById('depDragSvg');
+  const path = document.getElementById('ddPath');
+  svg.style.display = 'block';
+
+  // Point de départ : centre droit du bouton link
+  const btn = e.currentTarget;
+  const r = btn.getBoundingClientRect();
+  const x1 = r.left + r.width / 2;
+  const y1 = r.top + r.height / 2;
+
+  // Curseur global crosshair
+  const ghost = document.createElement('div');
+  ghost.style.cssText = 'position:fixed;inset:0;cursor:crosshair;z-index:7999';
+  document.body.appendChild(ghost);
+
+  let targetId = null;
+
+  const drawPath = (x2, y2) => {
+    const dx = Math.abs(x2 - x1);
+    const cx1 = x1 + Math.max(40, dx * 0.5);
+    const cx2 = x2 - Math.max(40, dx * 0.5);
+    path.setAttribute('d', `M${x1},${y1} C${cx1},${y1} ${cx2},${y2} ${x2},${y2}`);
+  };
+
+  const onMove = ev => {
+    drawPath(ev.clientX, ev.clientY);
+
+    // Détecter la barre survolée
+    ghost.style.pointerEvents = 'none';
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    ghost.style.pointerEvents = 'auto';
+
+    // Trouver la .tbar parente
+    const bar = el?.closest?.('.tbar');
+    // Retirer ancien highlight
+    document.querySelectorAll('.tbar.dep-target').forEach(b => b.classList.remove('dep-target'));
+
+    if (bar && bar.dataset.id && bar.dataset.id !== fromId) {
+      bar.classList.add('dep-target');
+      targetId = bar.dataset.id;
+    } else {
+      targetId = null;
+    }
+  };
+
+  const onUp = ev => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    ghost.remove();
+    svg.style.display = 'none';
+    path.setAttribute('d', '');
+    document.querySelectorAll('.tbar.dep-target').forEach(b => b.classList.remove('dep-target'));
+
+    if (!targetId || targetId === fromId) return;
+
+    // Vérifier que la dépendance n'existe pas déjà et éviter les cycles
+    const from = S.tasks.find(t => t.id === fromId);
+    const to   = S.tasks.find(t => t.id === targetId);
+    if (!from || !to) return;
+    if (to.deps.includes(fromId)) return; // déjà définie
+
+    // Vérifier absence de cycle : fromId ne doit pas être atteignable depuis targetId
+    function reaches(startId, goalId, visited = new Set()) {
+      if (startId === goalId) return true;
+      if (visited.has(startId)) return false;
+      visited.add(startId);
+      const t = S.tasks.find(t => t.id === startId);
+      return (t?.deps || []).some(d => reaches(d, goalId, visited));
+    }
+    if (reaches(fromId, targetId)) {
+      // Cycle détecté — petit feedback visuel
+      const warn = document.createElement('div');
+      warn.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#F87171;color:#fff;padding:8px 16px;border-radius:8px;font:600 12px Outfit,sans-serif;z-index:9999;pointer-events:none';
+      warn.textContent = '⚠ Cycle détecté — dépendance non créée';
+      document.body.appendChild(warn);
+      setTimeout(() => warn.remove(), 2000);
+      return;
+    }
+
+    to.deps.push(fromId);
+    renderFast();
+  };
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+// =====================================================
+// BAR MOVE (drag whole bar horizontally)
+// =====================================================
+function barMoveStart(e, id) {
+  // Ignorer si clic sur les handles ou double-clic
+  if(e.target.classList.contains('tbar-handle')) return;
+  if(e.detail >= 2) return; // double-clic → openModal géré par ondblclick
+  e.stopPropagation();
+  e.preventDefault();
+  hideTip();
+  const t = S.tasks.find(t=>t.id===id);
+  if(!t) return;
+
+  const {start} = getBounds();
+  const dw = S.dw;
+  const startX = e.clientX;
+  const origStart = t.startDate;
+  const origEnd = t.endDate;
+  const durDays = Math.round((parse(origEnd)-parse(origStart))/DAY); // durée calendaire fixe
+  let moved = false;
+
+  // Curseur global
+  const ghost = document.createElement('div');
+  ghost.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;cursor:grabbing;z-index:9999';
+  document.body.appendChild(ghost);
+
+  // Tooltip live
+  const tip = document.createElement('div');
+  tip.style.cssText='position:fixed;background:var(--sf2);border:1px solid var(--acc);border-radius:6px;padding:4px 10px;font:600 11px JetBrains Mono,monospace;color:#fff;z-index:10000;pointer-events:none;white-space:nowrap;display:none';
+  document.body.appendChild(tip);
+
+  const onMove = ev => {
+    const dx = ev.clientX - startX;
+    const daysDelta = Math.round(dx / dw);
+    if(daysDelta === 0 && !moved) return;
+    moved = true;
+
+    let newStart = new Date(parse(origStart).getTime() + daysDelta*DAY);
+    // Snap au prochain jour ouvré si on atterrit sur un WE/férié
+    while(wknd(newStart)) newStart.setTime(newStart.getTime()+DAY*(daysDelta>=0?1:-1));
+    const newEnd = new Date(newStart.getTime() + durDays*DAY);
+
+    t.startDate = fmt(newStart);
+    t.endDate   = fmt(newEnd);
+
+    tip.style.display='block';
+    tip.textContent = '⬌ ' + disp(t.startDate) + ' → ' + disp(t.endDate) + ' · ' + workDays(t) + 'j';
+    tip.style.left=(ev.clientX+14)+'px';
+    tip.style.top=(ev.clientY-34)+'px';
+    renderDrag();
+  };
+
+  const onUp = ev => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    ghost.remove();
+    tip.remove();
+    if(!moved) {
+      selTask(id);
+    } else {
+      render(); // render complet + saveState + autoSchedule
+    }
+  };
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+// =====================================================
+// BAR RESIZE (drag start/end handles)
+// =====================================================
+function barResizeStart(e, id, side) {
+  e.stopPropagation();
+  e.preventDefault();
+  hideTip();
+  const t = S.tasks.find(t=>t.id===id);
+  if(!t) return;
+
+  const {start} = getBounds();
+  const dw = S.dw;
+  const startX = e.clientX;
+  const origStart = t.startDate;
+  const origEnd = t.endDate;
+
+  // Ghost bar overlay
+  const ghost = document.createElement('div');
+  ghost.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;cursor:ew-resize;z-index:9999';
+  document.body.appendChild(ghost);
+
+  // Tooltip live
+  const liveTooltip = document.createElement('div');
+  liveTooltip.style.cssText='position:fixed;background:var(--sf2);border:1px solid var(--acc);border-radius:6px;padding:4px 10px;font:600 11px JetBrains Mono,monospace;color:#fff;z-index:10000;pointer-events:none;white-space:nowrap';
+  document.body.appendChild(liveTooltip);
+
+  const onMove = ev => {
+    const dx = ev.clientX - startX;
+    const daysDelta = Math.round(dx / dw);
+    if(daysDelta === 0) { liveTooltip.style.display='none'; return; }
+
+    if(side === 'start') {
+      const newStartDate = parse(origStart);
+      newStartDate.setTime(newStartDate.getTime() + daysDelta*DAY);
+      if(newStartDate >= parse(origEnd)) return;
+      // Snap to nearest work day
+      while(wknd(newStartDate)) newStartDate.setTime(newStartDate.getTime()+DAY*(daysDelta>0?1:-1));
+      if(newStartDate >= parse(origEnd)) return;
+      t.startDate = fmt(newStartDate);
+      liveTooltip.textContent = '◀ ' + disp(t.startDate) + ' · ' + workDays(t) + 'j';
+    } else {
+      const newEndDate = parse(origEnd);
+      newEndDate.setTime(newEndDate.getTime() + daysDelta*DAY);
+      if(newEndDate <= parse(origStart)) return;
+      while(wknd(newEndDate)) newEndDate.setTime(newEndDate.getTime()+DAY*(daysDelta>0?1:-1));
+      if(newEndDate <= parse(origStart)) return;
+      t.endDate = fmt(newEndDate);
+      liveTooltip.textContent = '▶ ' + disp(t.endDate) + ' · ' + workDays(t) + 'j';
+    }
+    liveTooltip.style.display='block';
+    liveTooltip.style.left=(ev.clientX+12)+'px';
+    liveTooltip.style.top=(ev.clientY-30)+'px';
+    renderDrag();
+  };
+
+  const onUp = () => {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    ghost.remove();
+    liveTooltip.remove();
+    render();
+  };
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function durCommit(inp, id) {
+  const n = parseInt(inp.value);
+  if(!n || n < 1) { inp.value = workDays(S.tasks.find(t=>t.id===id)); return; }
+  const t = S.tasks.find(t=>t.id===id);
+  if(!t) return;
+  const newEnd = addWorkDays(t.startDate, n);
+  if(newEnd === t.endDate) return; // rien n'a changé
+  t.endDate = newEnd;
+  renderFast();
+}
+function durKey(e, id) {
+  if(e.key === 'Enter') { e.target.blur(); }
+  if(e.key === 'Escape') {
+    const t = S.tasks.find(t=>t.id===id);
+    if(t) e.target.value = workDays(t);
+    e.target.blur();
+  }
+  e.stopPropagation();
+}
+function selTask(id){
+  S.selId=id;
+  const i=S.tasks.findIndex(t=>t.id===id);
+  // Mise à jour visuelle légère : juste les classes, sans recréer le DOM
+  document.querySelectorAll('#tList .trow').forEach((el,idx)=>{
+    el.classList.toggle('sel', idx===i);
+  });
+  // Scroll list
+  syncLock=true;
+  document.getElementById('tList').scrollTop=Math.max(0,i*44-100);
+  syncLock=false;
+  // Scroll gantt horizontalement
+  const x=xOf(S.tasks[i].startDate);
+  const gscr=document.getElementById('gScr');
+  if(x<gscr.scrollLeft||x>gscr.scrollLeft+gscr.clientWidth-100) gscr.scrollLeft=Math.max(0,x-60);
+}
+
+function moveTask(e,id,dir){
+  e.stopPropagation(); // ne pas déclencher selTask
+  const i=S.tasks.findIndex(t=>t.id===id);
+  const j=i+dir;
+  if(j<0||j>=S.tasks.length)return;
+  [S.tasks[i],S.tasks[j]]=[S.tasks[j],S.tasks[i]];
+  S.selId=id;
+  renderFast();
+  // Garder le scroll sur la tâche déplacée
+  setTimeout(()=>{
+    const ni=S.tasks.findIndex(t=>t.id===id);
+    document.getElementById('tList').scrollTop=ni*44-100;
+  },10);
+}
+
+// Scroll sync (vertical)
+let syncLock=false;
+document.getElementById('gScr').addEventListener('scroll',()=>{
+  if(syncLock)return; syncLock=true;
+  document.getElementById('tList').scrollTop=document.getElementById('gScr').scrollTop;
+  syncLock=false;
+});
+document.getElementById('tList').addEventListener('scroll',()=>{
+  if(syncLock)return; syncLock=true;
+  document.getElementById('gScr').scrollTop=document.getElementById('tList').scrollTop;
+  syncLock=false;
+});
+
+// Nettoyage de sécurité si la souris quitte la fenêtre pendant un drag
+window.addEventListener('blur', () => {
+  document.querySelectorAll('div[style*="z-index:9999"], div[style*="z-index: 9999"]').forEach(g => g.remove());
+});
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden) document.querySelectorAll('div[style*="z-index:9999"]').forEach(g => g.remove());
+});
+
+// =====================================================
+// TOOLTIP
+// =====================================================
+let _tipTimer=null;
+function showTip(e,id){
+  hideTip();
+  // Capturer la position de la barre au moment du survol
+  const bar=e.currentTarget;
+  _tipTimer=setTimeout(()=>{
+    const t=S.tasks.find(x=>x.id===id);if(!t)return;
+    document.getElementById('tipT').textContent=t.name;
+    document.getElementById('tipS').textContent=dispL(t.startDate);
+    document.getElementById('tipE').textContent=dispL(t.endDate);
+    const wd=workDays(t), cd=dur(t);
+    document.getElementById('tipD').textContent=wd+' j ouvré'+(wd>1?'s':'')+(cd!==wd?' ('+cd+' cal.)':'');
+    document.getElementById('tipPct').textContent=t.progress+'%';
+    document.getElementById('tipA').textContent=t.assignee||'—';
+    document.getElementById('tipARow').style.display='flex';
+    const nt=document.getElementById('tipNRow');
+    if(t.notes){document.getElementById('tipN').textContent=t.notes;nt.style.display='flex';}else nt.style.display='none';
+    const cr=document.getElementById('tipCRow');
+    cr.style.display=(S.showCP&&S.cpIds.has(id))?'flex':'none';
+    const fr=document.getElementById('tipFRow');
+    if(S.cpData[id]!==undefined){
+      const fl=S.cpData[id].float;
+      document.getElementById('tipF').textContent=fl+' jour(s)';
+      document.getElementById('tipF').style.color=fl===0?'var(--crit)':fl<=2?'var(--yel)':'var(--green)';
+      fr.style.display='flex';
+    } else fr.style.display='none';
+    const bRow=document.getElementById('tipBRow');
+    const rRow=document.getElementById('tipRRow');
+    if(t.montant>0){
+      document.getElementById('tipB').textContent=fmtEur(t.montant);
+      document.getElementById('tipR').textContent=fmtEur(t.montant*t.progress/100);
+      bRow.style.display='flex'; rRow.style.display='flex';
+    } else { bRow.style.display='none'; rRow.style.display='none'; }
+    // Positionner par rapport à la barre (statique)
+    const tip=document.getElementById('tip');
+    tip.classList.add('vis');
+    const rect=bar.getBoundingClientRect();
+    const rw=tip.offsetWidth||200;
+    const rh=tip.offsetHeight||180;
+    let x=rect.left;
+    let y=rect.bottom+8;
+    // Éviter débordement droite
+    if(x+rw>window.innerWidth-8) x=window.innerWidth-rw-8;
+    // Éviter débordement bas → afficher au-dessus
+    if(y+rh>window.innerHeight-8) y=rect.top-rh-8;
+    tip.style.left=Math.max(8,x)+'px';
+    tip.style.top=Math.max(8,y)+'px';
+  }, 1500);
+}
+function hideTip(){
+  clearTimeout(_tipTimer);
+  _tipTimer=null;
+  document.getElementById('tip').classList.remove('vis');
+}
+
+// =====================================================
+// KEYBOARD SHORTCUTS
+// =====================================================
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ closeModal(); }
+  if(e.key==='n'&&!e.ctrlKey&&!e.metaKey&&!e.target.matches('input,textarea,select'))openModal();
+  if(e.key==='Delete'&&S.selId&&!document.getElementById('ovl').classList.contains('open')){
+    const t=S.tasks.find(x=>x.id===S.selId);
+    popConfirm(`Supprimer "${t?.name||'cette tâche'}" ?`, e).then(ok=>{
+      if(!ok) return;
+      S.tasks=S.tasks.filter(t=>t.id!==S.selId);
+      S.tasks.forEach(t=>t.deps=t.deps.filter(d=>d!==S.selId));
+      S.selId=null; render();
+    });
+  }
+});
+
+// =====================================================
+// POPOVER CONFIRM
+// =====================================================
+let _popResolve=null;
+function popConfirm(msg, e, okLabel='Supprimer') {
+  return new Promise(resolve => {
+    _popResolve = resolve;
+    const pop = document.getElementById('cpop');
+    document.getElementById('cpopMsg').textContent = msg;
+    document.getElementById('cpopOk').textContent = okLabel;
+    // Position near cursor, stay inside viewport
+    const pw = 200, ph = 90;
+    let x = (e?.clientX || window.innerWidth/2) + 8;
+    let y = (e?.clientY || window.innerHeight/2) + 8;
+    if (x + pw > window.innerWidth - 8) x = (e?.clientX || x) - pw - 8;
+    if (y + ph > window.innerHeight - 8) y = (e?.clientY || y) - ph - 8;
+    pop.style.left = x + 'px';
+    pop.style.top = y + 'px';
+    pop.style.transformOrigin = `${x < window.innerWidth/2 ? 'top left' : 'top right'}`;
+    pop.classList.add('vis');
+  });
+}
+function closePop(result=false) {
+  document.getElementById('cpop').classList.remove('vis');
+  if (_popResolve) { _popResolve(result); _popResolve=null; }
+}
+document.getElementById('cpopOk').addEventListener('click', () => closePop(true));
+// Close on outside click
+document.addEventListener('mousedown', e => {
+  const pop = document.getElementById('cpop');
+  if (pop.classList.contains('vis') && !pop.contains(e.target)) closePop(false);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePop(false);
+  if (e.key === 'Enter' && document.getElementById('cpop').classList.contains('vis')) { e.preventDefault(); closePop(true); }
+});
+// =====================================================
+// =====================================================
+// SIDEBAR RESIZE
+// =====================================================
+(function(){
+  const handle = document.getElementById('sideResize');
+  const side = handle.previousElementSibling;
+  let startX, startW;
+  handle.addEventListener('mousedown', e => {
+    startX = e.clientX;
+    startW = side.offsetWidth;
+    handle.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    const onMove = ev => {
+      const w = Math.max(200, Math.min(600, startW + ev.clientX - startX));
+      side.style.width = w + 'px';
+    };
+    const onUp = () => {
+      handle.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    e.preventDefault();
+  });
+})();
+
+// =====================================================
+// FACTURATION
+// =====================================================
+function openFacturation() {
+  const proj = document.getElementById('projName').value;
+  const today = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  const leaves = S.tasks.filter(t=>!t.isGroup);
+  const totalBudget = leaves.reduce((a,t)=>a+(t.montant||0),0);
+  const totalRealise = leaves.reduce((a,t)=>a+(t.montant||0)*t.progress/100,0);
+  const totalReste = totalBudget - totalRealise;
+  const pctGlobal = totalBudget>0?Math.round(totalRealise/totalBudget*100):0;
+  const nbBudget = leaves.filter(t=>t.montant>0).length;
+
+  let rows='';
+  S.tasks.forEach(t=>{
+    if(t.isGroup){
+      const children=S.tasks.filter(c=>!c.isGroup&&(c.parentId===t.id||false));
+      // Fallback positionnel si pas de parentId
+      if(!children.length){
+        const idx=S.tasks.indexOf(t);
+        const lvl=t.level||0;
+        for(let j=idx+1;j<S.tasks.length;j++){
+          const u=S.tasks[j]; if(u.isGroup&&(u.level||0)<=lvl) break;
+          if(!u.isGroup) children.push(u);
+        }
+      }
+      const gBudget=children.reduce((a,c)=>a+(c.montant||0),0);
+      const gRealise=children.reduce((a,c)=>a+(c.montant||0)*c.progress/100,0);
+      rows+=`<tr class="grp-row">
+        <td colspan="3">${esc(t.name)}</td>
+        <td class="num">${gBudget>0?fmtEur(gBudget):'—'}</td>
+        <td class="num" style="color:var(--green)">${gBudget>0?fmtEur(gRealise):'—'}</td>
+        <td class="num" style="color:var(--yel)">${gBudget>0?fmtEur(gBudget-gRealise):'—'}</td>
+      </tr>`;
+    } else {
+      const m=t.montant||0;
+      const av=m*t.progress/100;
+      rows+=`<tr class="${m>0?'':'no-budget'}">
+        <td style="padding-left:${(t.level||0)*14+10}px">
+          <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${t.color||'#5B9CF6'};margin-right:6px;vertical-align:middle"></span>${esc(t.name)}
+        </td>
+        <td style="color:var(--mut);font-size:10px">${disp(t.startDate)} → ${disp(t.endDate)}</td>
+        <td style="text-align:center">
+          <span style="color:${t.progress===100?'var(--green)':t.progress>0?'var(--yel)':'var(--mut)'}">${t.progress}%</span>
+          <span class="fact-pct-bar"><span class="fact-pct-fill" style="width:${t.progress}%"></span></span>
+        </td>
+        <td class="num">${m>0?fmtEur(m):'—'}</td>
+        <td class="num" style="color:var(--green)">${m>0?fmtEur(av):'—'}</td>
+        <td class="num" style="color:var(--yel)">${m>0?fmtEur(m-av):'—'}</td>
+      </tr>`;
+    }
+  });
+
+  document.getElementById('factContent').innerHTML=`
+    <div style="font-size:11px;color:var(--dim);margin-bottom:16px">
+      <strong style="color:var(--text)">${esc(proj)}</strong> — ${today} &nbsp;·&nbsp; ${leaves.length} tâche(s) &nbsp;·&nbsp; ${nbBudget} budgétée(s)
+    </div>
+    <div class="fact-summary">
+      <div class="fact-kpi">
+        <div class="fact-kpi-lbl">Budget total</div>
+        <div class="fact-kpi-val">${totalBudget>0?fmtEur(totalBudget):'—'}</div>
+        <div class="fact-kpi-sub">${nbBudget} tâche(s) budgétée(s)</div>
+      </div>
+      <div class="fact-kpi">
+        <div class="fact-kpi-lbl">Montant réalisé</div>
+        <div class="fact-kpi-val" style="color:var(--green)">${totalBudget>0?fmtEur(totalRealise):'—'}</div>
+        <div class="fact-kpi-sub">${pctGlobal}% du budget</div>
+      </div>
+      <div class="fact-kpi">
+        <div class="fact-kpi-lbl">Reste à facturer</div>
+        <div class="fact-kpi-val" style="color:var(--yel)">${totalBudget>0?fmtEur(totalReste):'—'}</div>
+        <div class="fact-kpi-sub">${100-pctGlobal}% du budget</div>
+      </div>
+    </div>
+    <table class="fact-table">
+      <thead><tr>
+        <th>Tâche</th><th>Période</th><th style="text-align:center">Avancement</th>
+        <th class="num">Montant</th><th class="num">Réalisé</th><th class="num">Reste</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr style="border-top:2px solid var(--b2)">
+        <td colspan="3" style="font:700 12px 'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#fff;padding:10px 10px">TOTAL</td>
+        <td class="num" style="font:700 13px 'JetBrains Mono','Courier New',Courier,monospace;color:#fff">${totalBudget>0?fmtEur(totalBudget):'—'}</td>
+        <td class="num" style="font:700 13px 'JetBrains Mono','Courier New',Courier,monospace;color:var(--green)">${totalBudget>0?fmtEur(totalRealise):'—'}</td>
+        <td class="num" style="font:700 13px 'JetBrains Mono','Courier New',Courier,monospace;color:var(--yel)">${totalBudget>0?fmtEur(totalReste):'—'}</td>
+      </tr></tfoot>
+    </table>`;
+
+  document.getElementById('ovlFact').classList.add('open');
+}
+
+function closeFact(){ document.getElementById('ovlFact').classList.remove('open'); }
+
+function printFact(){
+  const proj=document.getElementById('projName').value;
+  const content=document.getElementById('factContent').innerHTML
+    .replace(/var\(--green\)/g,'#059669').replace(/var\(--yel\)/g,'#d97706')
+    .replace(/var\(--mut\)/g,'#888').replace(/var\(--text\)/g,'#1a1f2e')
+    .replace(/var\(--dim\)/g,'#666').replace(/var\(--b2\)/g,'#ddd');
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Facturation — ${esc(proj)}</title>
+  <style>
+    body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#1a1f2e;margin:24px 32px}
+    h1{font-size:16px;margin:0 0 4px}
+    .fact-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+    .fact-kpi{border:1px solid #ddd;border-radius:6px;padding:10px 14px}
+    .fact-kpi-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:#888;margin-bottom:4px}
+    .fact-kpi-val{font-size:16px;font-weight:700}
+    .fact-kpi-sub{font-size:10px;color:#888;margin-top:2px}
+    .fact-table{width:100%;border-collapse:collapse;font-size:11px}
+    .fact-table th{text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:#888;padding:6px 8px;border-bottom:2px solid #ddd}
+    .fact-table th.num,.fact-table td.num{text-align:right}
+    .fact-table td{padding:6px 8px;border-bottom:1px solid #eee}
+    .fact-table tr.grp-row>td{font-weight:700;background:#f3f4f6;padding:8px}
+    .fact-table tfoot td{font-weight:700;border-top:2px solid #ddd;padding:8px}
+    .fact-pct-bar{display:inline-block;width:40px;height:4px;background:#e5e7eb;border-radius:2px;vertical-align:middle;margin-left:4px;overflow:hidden}
+    .fact-pct-fill{height:100%;border-radius:2px;background:#059669}
+    .no-budget>td{opacity:.5}
+  </style></head><body>
+  <h1>Point de facturation</h1>
+  ${content}
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(),400);
+}
+
+const LS_KEY = 'ganttflow_v2';
+
+function saveState() {
+  try {
+    const data = {
+      project: document.getElementById('projName').value,
+      tasks: S.tasks,
+      zoom: S.zoom,
+      showCP: S.showCP,
+      showDeps: S.showDeps,
+      hideWknd: S.hideWknd,
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  } catch(e) { console.warn('Save failed', e); }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data.tasks || !Array.isArray(data.tasks)) return false;
+    S.tasks = data.tasks;
+    S.zoom = data.zoom || 'day';
+    S.dw = ZOOM_DW[S.zoom];
+    S.showCP = data.showCP !== undefined ? data.showCP : true;
+    S.showDeps = data.showDeps !== undefined ? data.showDeps : true;
+    S.hideWknd = data.hideWknd || false;
+    if (data.project) document.getElementById('projName').value = data.project;
+    // Sync boutons toolbar
+    document.querySelectorAll('.zbtn').forEach(b => b.classList.toggle('on', b.dataset.z === S.zoom));
+    document.getElementById('btnCP').classList.toggle('on', S.showCP);
+    document.getElementById('btnDeps').classList.toggle('on', S.showDeps);
+    document.getElementById('btnWknd').classList.toggle('on', !S.hideWknd);
+    return true;
+  } catch(e) { console.warn('Load failed', e); return false; }
+}
+
+async function clearState(e) {
+  const ok = await popConfirm('Réinitialiser le projet ?\nToutes les tâches seront supprimées.', e, 'Réinitialiser');
+  if (!ok) return;
+  localStorage.removeItem(LS_KEY);
+  S.tasks = [];
+  S.selId = null;
+  S.cpIds = new Set();
+  S.cpData = {};
+  // Vider le DOM immédiatement pour éviter les artefacts
+  document.getElementById('tList').innerHTML = '';
+  document.getElementById('grows').innerHTML = '';
+  document.getElementById('depSvg').innerHTML = '';
+  document.getElementById('projName').value = 'Nouveau projet';
+  render();
+}
+
+// Sauvegarder aussi quand le nom du projet change
+document.getElementById('projName').addEventListener('input', saveState);
+
+// =====================================================
+// SAMPLE DATA
+// =====================================================
+function initSample(){
+  const t=new Date(); t.setHours(0,0,0,0);
+  const T=n=>fmt(new Date(t.getTime()+n*DAY));
+  document.getElementById('projName').value='Refonte Site Web';
+  S.tasks=[
+    // ── Groupe 0 : Cadrage ─────────────────────────────────────────
+    {id:'g1',isGroup:true,level:0,name:'CADRAGE',startDate:T(-40),endDate:T(-30),color:'#5B9CF6',deps:[],progress:0,assignee:'',priority:'high',notes:''},
+    {id:'t1',level:1,parentId:'g1',name:'Recueil des besoins',startDate:T(-40),endDate:T(-36),progress:100,deps:[],assignee:'Alice Martin',priority:'high',color:'#5B9CF6',notes:'Ateliers avec les parties prenantes'},
+    {id:'t2',level:1,parentId:'g1',name:'Analyse de l\'existant',startDate:T(-35),endDate:T(-32),progress:100,deps:['t1'],assignee:'Bob Dupont',priority:'medium',color:'#5B9CF6',notes:'Audit technique'},
+    {id:'t3',level:1,parentId:'g1',name:'Cahier des charges',startDate:T(-31),endDate:T(-30),progress:100,deps:['t2'],assignee:'Alice Martin',priority:'high',color:'#5B9CF6',notes:''},
+
+    // ── Groupe 1 : Design ──────────────────────────────────────────
+    {id:'g2',isGroup:true,level:0,name:'DESIGN',startDate:T(-29),endDate:T(-14),color:'#B99EFF',deps:[],progress:0,assignee:'',priority:'high',notes:''},
+    {id:'t4',level:1,parentId:'g2',name:'Maquettes UI/UX',startDate:T(-29),endDate:T(-21),progress:100,deps:['t3'],assignee:'Clara Petit',priority:'high',color:'#B99EFF',notes:'Figma + prototypes'},
+    {id:'t5',level:1,parentId:'g2',name:'Validation maquettes',startDate:T(-20),endDate:T(-18),progress:100,deps:['t4'],assignee:'Alice Martin',priority:'medium',color:'#B99EFF',notes:''},
+    {id:'t6',level:1,parentId:'g2',name:'Design system',startDate:T(-17),endDate:T(-14),progress:100,deps:['t5'],assignee:'Clara Petit',priority:'high',color:'#B99EFF',notes:'Tokens, composants'},
+
+    // ── Groupe 2 : Développement ───────────────────────────────────
+    {id:'g3',isGroup:true,level:0,name:'DÉVELOPPEMENT',startDate:T(-20),endDate:T(2),color:'#38BDF8',deps:[],progress:0,assignee:'',priority:'high',notes:''},
+    {id:'g31',isGroup:true,level:1,parentId:'g3',name:'Frontend',startDate:T(-13),endDate:T(2),color:'#38BDF8',deps:[],progress:0,assignee:'',priority:'high',notes:''},
+    {id:'t7',level:2,parentId:'g31',name:'Intégration design system',startDate:T(-13),endDate:T(-9),progress:80,deps:['t6'],assignee:'Clara Petit',priority:'high',color:'#38BDF8',notes:'React + TypeScript'},
+    {id:'t8',level:2,parentId:'g31',name:'Développement pages',startDate:T(-8),endDate:T(0),progress:50,deps:['t7'],assignee:'Clara Petit',priority:'high',color:'#38BDF8',notes:''},
+    {id:'t9',level:2,parentId:'g31',name:'Responsive & accessibilité',startDate:T(1),endDate:T(2),progress:0,deps:['t8'],assignee:'Clara Petit',priority:'medium',color:'#38BDF8',notes:''},
+    {id:'g32',isGroup:true,level:1,parentId:'g3',name:'Backend',startDate:T(-20),endDate:T(1),color:'#0EA5E9',deps:[],progress:0,assignee:'',priority:'high',notes:''},
+    {id:'t10',level:2,parentId:'g32',name:'Architecture technique',startDate:T(-20),endDate:T(-16),progress:100,deps:['t3'],assignee:'Bob Dupont',priority:'high',color:'#0EA5E9',notes:'Node.js + PostgreSQL'},
+    {id:'t11',level:2,parentId:'g32',name:'API REST',startDate:T(-15),endDate:T(-5),progress:90,deps:['t10'],assignee:'Bob Dupont',priority:'high',color:'#0EA5E9',notes:''},
+    {id:'t12',level:2,parentId:'g32',name:'Authentification & sécurité',startDate:T(-4),endDate:T(1),progress:30,deps:['t11'],assignee:'Bob Dupont',priority:'high',color:'#0EA5E9',notes:''},
+
+    // ── Groupe 3 : Intégration & Tests ────────────────────────────
+    {id:'g4',isGroup:true,level:0,name:'INTÉGRATION & TESTS',startDate:T(3),endDate:T(15),color:'#3DDBA8',deps:[],progress:0,assignee:'',priority:'high',notes:''},
+    {id:'t13',level:1,parentId:'g4',name:'Intégration API',startDate:T(3),endDate:T(6),progress:0,deps:['t9','t12'],assignee:'Clara Petit',priority:'high',color:'#3DDBA8',notes:''},
+    {id:'t14',level:1,parentId:'g4',name:'Tests fonctionnels',startDate:T(7),endDate:T(11),progress:0,deps:['t13'],assignee:'Eve Roux',priority:'medium',color:'#3DDBA8',notes:'Cypress E2E'},
+    {id:'t15',level:1,parentId:'g4',name:'Tests de performance',startDate:T(7),endDate:T(9),progress:0,deps:['t13'],assignee:'Bob Dupont',priority:'low',color:'#34D399',notes:'k6 load testing'},
+    {id:'t16',level:1,parentId:'g4',name:'Recette client',startDate:T(12),endDate:T(15),progress:0,deps:['t14'],assignee:'Alice Martin',priority:'high',color:'#3DDBA8',notes:'UAT'},
+
+    // ── Groupe 4 : Livraison ──────────────────────────────────────
+    {id:'g5',isGroup:true,level:0,name:'LIVRAISON',startDate:T(16),endDate:T(20),color:'#FF7140',deps:[],progress:0,assignee:'',priority:'high',notes:''},
+    {id:'t17',level:1,parentId:'g5',name:'Corrections finales',startDate:T(16),endDate:T(18),progress:0,deps:['t16'],assignee:'Clara Petit',priority:'medium',color:'#FF7140',notes:''},
+    {id:'t18',level:1,parentId:'g5',name:'Déploiement production',startDate:T(19),endDate:T(20),progress:0,deps:['t17'],assignee:'Bob Dupont',priority:'high',color:'#FF7140',notes:'Migration + rollout'},
+  ];
+}
+
+// =====================================================
+// INIT
+// =====================================================
+if (!loadState()) {
+  initSample();
+}
+applyTheme(localStorage.getItem('ganttflow_theme')||'dark');
+render();
+
+document.title='GanttFlow Pro — [N] Nouvelle tâche · [Del] Supprimer · [Esc] Fermer';
+</script>
+</body>
+</html>
